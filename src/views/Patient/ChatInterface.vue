@@ -6,7 +6,7 @@
     <header class="bg-white shadow-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-3">
         <button 
-          @click="$emit('close')"
+          @click="$router.go(-1)"
           class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
           <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
