@@ -241,11 +241,6 @@ export default {
       return route.meta?.fullScreen !== true
     })
 
-    const showHamburgerMenu = computed(() => {
-      // Show hamburger menu on all patient pages except full screen ones
-      return route.path.startsWith('/patient') && route.meta?.fullScreen !== true
-    })
-
     const showChatButton = computed(() => {
       // Show chat button on all pages except chat page itself
       return route.name !== 'PatientChat'
@@ -428,7 +423,6 @@ export default {
       userRole,
       userInitials,
       showBottomNav,
-      showHamburgerMenu,
       showChatButton,
       menuItems,
       
