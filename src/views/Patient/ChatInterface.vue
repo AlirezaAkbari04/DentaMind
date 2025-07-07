@@ -1,7 +1,7 @@
 <!-- Full-Screen Chat Interface Component -->
 <template>
   <!-- Full-Screen Chat Modal -->
-  <div v-if="isOpen" class="fixed inset-0 bg-white z-50 flex flex-col">
+  <div class="fixed inset-0 bg-white z-50 flex flex-col">
     <!-- Header -->
     <header class="bg-white shadow-sm border-b border-gray-200 px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-3">
@@ -744,7 +744,19 @@ export default {
 
 /* Action button styling */
 .action-btn {
-  @apply flex items-center space-x-2 px-3 py-2 bg-gray-100 rounded-lg text-sm text-gray-700 hover:bg-gray-200 transition-colors duration-200;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+  transition: background-color 0.2s ease;
+}
+
+.action-btn:hover {
+  background-color: #e5e7eb;
 }
 
 /* Custom scrollbar for messages */
@@ -851,11 +863,12 @@ input[type="range"]::-moz-range-thumb {
   }
   
   .action-btn {
-    @apply px-2 py-1 text-xs;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
   }
   
   .action-btn span {
-    @apply hidden sm:inline;
+    display: none;
   }
 }
 </style>

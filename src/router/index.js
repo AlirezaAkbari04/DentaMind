@@ -21,7 +21,7 @@ const FamilyManagement = () => import('@/views/Patient/FamilyManagement.vue')
 const ProfileSettings = () => import('@/views/Patient/ProfileSettings.vue')
 const AllAppointments = () => import('@/views/Patient/AllAppointments.vue')
 // Chat as a Component (matches your actual file placement)
-const ChatInterface = () => import('@/components/patient/ChatInterface.vue')
+const ChatInterface = () => import('@/views/Patient/ChatInterface.vue')
 
 const routes = [
   {

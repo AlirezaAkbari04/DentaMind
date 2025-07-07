@@ -455,20 +455,46 @@ export default {
 <style scoped>
 /* Navigation styles */
 .nav-item {
-  @apply flex flex-col items-center justify-center text-slate-600 transition-colors duration-200 hover:text-slate-800;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  transition: color 0.2s ease;
+  text-decoration: none;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.nav-item:hover {
+  color: #1e293b;
 }
 
 .nav-item-active {
-  @apply text-secondary-600 bg-secondary-50;
+  color: #00A86B;
+  background-color: #f0fdf4;
 }
 
 /* Menu styles */
 .menu-item {
-  @apply flex items-center space-x-3 p-3 rounded-lg text-slate-700 hover:bg-gray-50 transition-colors duration-200;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  color: #374151;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.menu-item:hover {
+  background-color: #f9fafb;
+  transform: translateX(2px);
 }
 
 .menu-item-active {
-  @apply bg-primary-50 text-primary-700;
+  background-color: #eff6ff;
+  color: #0052a3;
 }
 
 /* Transition animations */
@@ -530,13 +556,43 @@ export default {
   animation: spin 1s linear infinite;
 }
 
-/* Badge positioning */
+/* Badge positioning and styling */
 .relative {
   position: relative;
 }
 
 .absolute {
   position: absolute;
+}
+
+.nav-item .absolute,
+.fixed .absolute {
+  font-size: 0.625rem;
+  line-height: 1;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+/* Accessibility improvements */
+.nav-item:focus,
+.menu-item:focus {
+  outline: 2px solid #0066CC;
+  outline-offset: 2px;
+}
+
+button:focus {
+  outline: 2px solid #0066CC;
+  outline-offset: 2px;
+}
+
+/* Blur effect when loading */
+.blur-sm {
+  filter: blur(4px);
 }
 
 /* Responsive adjustments */
@@ -554,53 +610,13 @@ export default {
     bottom: 6rem;
     right: 1rem;
   }
-}
-
-/* Accessibility improvements */
-.nav-item:focus,
-.menu-item:focus {
-  outline: 2px solid #0066CC;
-  outline-offset: 2px;
-}
-
-button:focus {
-  outline: 2px solid #0066CC;
-  outline-offset: 2px;
-}
-
-/* Smooth transitions for better UX */
-* {
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
-}
-
-/* Blur effect when loading */
-.blur-sm {
-  filter: blur(4px);
-}
-
-/* Badge styles */
-.nav-item .absolute,
-.fixed .absolute {
-  font-size: 0.625rem;
-  line-height: 1;
-  min-width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 500;
-}
-
-/* Menu item hover effects */
-.menu-item:hover {
-  transform: translateX(2px);
-}
-
-/* Toast message styling */
-.fixed.top-4 {
-  max-width: calc(100vw - 2rem);
-  margin: 0 1rem;
+  
+  .fixed.top-4 {
+    max-width: calc(100vw - 2rem);
+    margin: 0 1rem;
+    left: 1rem;
+    right: 1rem;
+  }
 }
 
 @media (min-width: 640px) {

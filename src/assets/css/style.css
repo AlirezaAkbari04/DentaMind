@@ -17,14 +17,68 @@ body {
   line-height: 1.6;
 }
 
-* {
+/* Custom styles without @apply */
+.medical-card {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
   transition: all 0.2s ease-in-out;
 }
 
-body.preload * {
-  transition: none !important;
+.medical-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-color: #cbd5e1;
 }
 
+.btn-primary {
+  background-color: #0066CC;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #0052a3;
+}
+
+.btn-primary:focus {
+  outline: 2px solid #0066CC;
+  outline-offset: 2px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px #0066CC;
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+/* Scrollbar styles */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -42,31 +96,6 @@ body.preload * {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
-}
-
-.medical-card {
-  @apply bg-white rounded-xl shadow-sm border border-slate-200 p-6;
-  transition: all 0.2s ease-in-out;
-}
-
-.medical-card:hover {
-  @apply shadow-md border-slate-300;
-}
-
-.btn-primary {
-  @apply bg-primary-500 text-white px-6 py-3 rounded-lg font-medium;
-  @apply hover:bg-primary-600 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
-  @apply transition-all duration-200;
-}
-
-.form-input {
-  @apply w-full px-4 py-3 border border-slate-300 rounded-lg;
-  @apply focus:ring-2 focus:ring-primary-500 focus:border-transparent;
-  @apply transition-all duration-200 placeholder-slate-400;
-}
-
-.form-label {
-  @apply block text-sm font-medium text-slate-700 mb-2;
 }
 
 @media print {
