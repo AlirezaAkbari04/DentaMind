@@ -512,14 +512,15 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
+/* eslint-disable vue/no-unused-vars */
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'AllAppointments',
   setup() {
     const route = useRoute()
-    const router = useRouter()
     
     // Reactive data
     const selectedMember = ref('all')

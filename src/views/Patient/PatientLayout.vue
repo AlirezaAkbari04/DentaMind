@@ -261,7 +261,7 @@ export default {
         },
         {
           label: 'All Appointments',
-          route: '/patient/appointments',
+          route: '/patient/all-appointments',
           icon: 'calendar',
           description: 'Schedule and view appointments'
         },
