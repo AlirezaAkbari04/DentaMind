@@ -52,7 +52,7 @@
             type="text"
             placeholder="Search patients by name or ID..."
             class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          >
+          />
           <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -177,7 +177,7 @@
                   title="Duplicate Note"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                   </svg>
                 </button>
                 
@@ -211,7 +211,48 @@
                   <input 
                     v-model="noteForm.title"
                     type="text"
-                    placeholder="Document clinical observations, findings, and examination results..."
+                    placeholder="e.g., Routine Cleaning Follow-up"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-1">Procedure/Treatment</label>
+                  <select 
+                    v-model="noteForm.procedure"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="">Select procedure...</option>
+                    <option value="Routine Cleaning">Routine Cleaning</option>
+                    <option value="Cavity Filling">Cavity Filling</option>
+                    <option value="Root Canal">Root Canal</option>
+                    <option value="Crown Placement">Crown Placement</option>
+                    <option value="Tooth Extraction">Tooth Extraction</option>
+                    <option value="Consultation">Consultation</option>
+                    <option value="Follow-up">Follow-up</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-1">Note Type</label>
+                  <select 
+                    v-model="noteForm.type"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="Treatment">Treatment</option>
+                    <option value="Consultation">Consultation</option>
+                    <option value="Follow-up">Follow-up</option>
+                    <option value="Emergency">Emergency</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Clinical Findings -->
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Clinical Findings</label>
+                <textarea
+                  v-model="noteForm.findings"
+                  placeholder="Document clinical observations, findings, and examination results..."
                   rows="4"
                   class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 ></textarea>
@@ -269,7 +310,7 @@
                       v-model="noteForm.followUpRequired"
                       type="checkbox"
                       class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                    >
+                    />
                     <span class="text-sm font-medium text-slate-700">Follow-up Required</span>
                   </label>
                   
@@ -278,7 +319,7 @@
                       v-model="noteForm.followUpDate"
                       type="date"
                       class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    >
+                    />
                   </div>
                 </div>
                 
@@ -837,6 +878,7 @@ export default {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 /* Hover effects */
@@ -983,45 +1025,4 @@ export default {
 .whitespace-pre-wrap {
   white-space: pre-wrap;
 }
-</style>e.g., Routine Cleaning"
-                    class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                </div>
-                
-                <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Procedure/Treatment</label>
-                  <select 
-                    v-model="noteForm.procedure"
-                    class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                    <option value="">Select procedure...</option>
-                    <option value="Routine Cleaning">Routine Cleaning</option>
-                    <option value="Cavity Filling">Cavity Filling</option>
-                    <option value="Root Canal">Root Canal</option>
-                    <option value="Crown Placement">Crown Placement</option>
-                    <option value="Tooth Extraction">Tooth Extraction</option>
-                    <option value="Consultation">Consultation</option>
-                    <option value="Follow-up">Follow-up</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Note Type</label>
-                  <select 
-                    v-model="noteForm.type"
-                    class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                    <option value="Treatment">Treatment</option>
-                    <option value="Consultation">Consultation</option>
-                    <option value="Follow-up">Follow-up</option>
-                    <option value="Emergency">Emergency</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Clinical Findings -->
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-2">Clinical Findings</label>
-                <textarea
-                  v-model="noteForm.findings"
-                  placeholder="
+</style>

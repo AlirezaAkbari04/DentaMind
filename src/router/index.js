@@ -1,5 +1,5 @@
 /**
- * Vue Router Configuration - Final Fixed Version
+ * Vue Router Configuration - Complete with Doctor Secretary Routes
  */
 
 import { createRouter, createWebHistory } from 'vue-router'
@@ -20,8 +20,17 @@ const MedicalRecords = () => import('@/views/Patient/MedicalRecords.vue')
 const FamilyManagement = () => import('@/views/Patient/FamilyManagement.vue')
 const ProfileSettings = () => import('@/views/Patient/ProfileSettings.vue')
 const AllAppointments = () => import('@/views/Patient/AllAppointments.vue')
-// Chat as a Component (matches your actual file placement)
 const ChatInterface = () => import('@/views/Patient/ChatInterface.vue')
+
+// Doctor Secretary Components - CREATE THESE FILES
+const DoctorSecretaryLayout = () => import('@/views/DoctorSecretary/DoctorSecretaryLayout.vue')
+const DoctorSecretaryDashboard = () => import('@/views/DoctorSecretary/DoctorSecretaryDashboard.vue')
+const PatientManagement = () => import('@/views/DoctorSecretary/PatientManagement.vue')
+const CommunicationHub = () => import('@/views/DoctorSecretary/CommunicationHub.vue')
+const PatientProfile = () => import('@/views/DoctorSecretary/PatientProfile.vue')
+const ClinicalNotes = () => import('@/views/DoctorSecretary/ClinicalNotes.vue')
+const AIDiagnostics = () => import('@/views/DoctorSecretary/AIDiagnostics.vue')
+const AppointmentApproval = () => import('@/views/DoctorSecretary/AppointmentApproval.vue')
 
 const routes = [
   {
@@ -39,6 +48,7 @@ const routes = [
     }
   },
 
+  // PATIENT ROUTES
   {
     path: '/patient',
     name: 'PatientLayout',
@@ -53,90 +63,132 @@ const routes = [
         path: '',
         redirect: '/patient/dashboard'
       },
-      
-      // Main Dashboard
       {
         path: 'dashboard',
         name: 'PatientDashboard',
         component: Dashboard,
-        meta: { 
-          title: 'Dashboard - Patient Portal'
-        }
+        meta: { title: 'Dashboard - Patient Portal' }
       },
-      
-      // Task Management
       {
         path: 'tasks',
         name: 'PatientTasks',
         component: TaskManagement,
-        meta: { 
-          title: 'My Tasks - Patient Portal'
-        }
+        meta: { title: 'My Tasks - Patient Portal' }
       },
-      
-      // Medical Records
       {
         path: 'medical-records',
         name: 'MedicalRecords',
         component: MedicalRecords,
-        meta: { 
-          title: 'Medical Records - Patient Portal'
-        }
+        meta: { title: 'Medical Records - Patient Portal' }
       },
-      
-      // Family Management
       {
         path: 'family',
         name: 'FamilyManagement',
         component: FamilyManagement,
-        meta: { 
-          title: 'Family Management - Patient Portal'
-        }
+        meta: { title: 'Family Management - Patient Portal' }
       },
-      
-      // All Appointments - FIXED PATH
       {
         path: 'all-appointments',
         name: 'AllAppointments',
         component: AllAppointments,
-        meta: { 
-          title: 'All Appointments - Patient Portal'
-        }
+        meta: { title: 'All Appointments - Patient Portal' }
       },
-      
-      // Profile & Settings
       {
         path: 'profile',
-        name: 'PatientProfile',
+        name: 'PatientProfileSettings',
         component: ProfileSettings,
-        meta: { 
-          title: 'Profile & Settings - Patient Portal'
-        }
+        meta: { title: 'Profile & Settings - Patient Portal' }
       },
-      
-      // Chat Interface - FIXED: Correct path as Component
       {
         path: 'chat',
         name: 'PatientChat',
         component: ChatInterface,
-        meta: { 
-          title: 'Chat - Patient Portal',
-          fullScreen: true
-        }
+        meta: { title: 'Chat - Patient Portal', fullScreen: true }
       }
-      
-      // Notifications - CREATE COMPONENT WHEN NEEDED
-      // {
-      //   path: 'notifications',
-      //   name: 'PatientNotifications',
-      //   component: () => import('@/views/Patient/Notifications.vue'),
-      //   meta: { 
-      //     title: 'Notifications - Patient Portal'
-      //   }
-      // }
     ]
   },
 
+  // DOCTOR SECRETARY ROUTES - NEW!
+  {
+    path: '/doctor-secretary',
+    name: 'DoctorSecretaryLayout',
+    component: DoctorSecretaryLayout,
+    meta: { 
+      requiresAuth: true, 
+      roles: ['doctor', 'secretary'],
+      title: 'Doctor & Secretary Portal'
+    },
+    children: [
+      {
+        path: '',
+        redirect: '/doctor-secretary/dashboard'
+      },
+      
+      // Main Dashboard
+      {
+        path: 'dashboard',
+        name: 'DoctorSecretaryDashboard',
+        component: DoctorSecretaryDashboard,
+        meta: { title: 'Dashboard - Doctor & Secretary Portal' }
+      },
+      
+      // Core Features (Both Roles)
+      {
+        path: 'patients',
+        name: 'PatientManagement',
+        component: PatientManagement,
+        meta: { title: 'Patient Management' }
+      },
+      
+      {
+        path: 'communication',
+        name: 'CommunicationHub',
+        component: CommunicationHub,
+        meta: { title: 'Communication Hub' }
+      },
+      
+      {
+        path: 'patient/:id',
+        name: 'PatientProfileView',
+        component: PatientProfile,
+        meta: { title: 'Patient Profile' }
+      },
+      
+      // Doctor-Specific Features
+      {
+        path: 'clinical-notes',
+        name: 'ClinicalNotes',
+        component: ClinicalNotes,
+        meta: { 
+          title: 'Clinical Notes - Doctor Portal',
+          roles: ['doctor']
+        }
+      },
+      
+      {
+        path: 'ai-diagnostics',
+        name: 'AIDiagnostics',
+        component: AIDiagnostics,
+        meta: { 
+          title: 'AI Diagnostics - Doctor Portal',
+          roles: ['doctor']
+        }
+      },
+      
+      // Secretary-Specific Features
+      {
+        path: 'appointments/approval',
+        name: 'AppointmentApproval',
+        component: AppointmentApproval,
+        meta: { 
+          title: 'Appointment Approval - Secretary Portal',
+          roles: ['secretary']
+        }
+      }
+    ]
+  },
+
+  // ERROR PAGES
   {
     path: '/unauthorized',
     name: 'Unauthorized',
@@ -177,7 +229,11 @@ router.onError((error) => {
 
 export function getDashboardRouteForRole(role) {
   const roleRoutes = {
-    patient: '/patient/dashboard'
+    patient: '/patient/dashboard',
+    doctor: '/doctor-secretary/dashboard',
+    secretary: '/doctor-secretary/dashboard',
+    admin: '/admin/dashboard',
+    moderator: '/moderator/dashboard'
   }
   
   return roleRoutes[role] || '/patient/dashboard'

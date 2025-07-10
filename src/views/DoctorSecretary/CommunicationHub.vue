@@ -71,7 +71,7 @@
               type="text"
               :placeholder="activeTab === 'chat' ? 'Search conversations...' : 'Search reports...'"
               class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            >
+            />
             <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -300,7 +300,7 @@
                     :alt="message.content"
                     class="rounded-lg max-w-full h-auto cursor-pointer"
                     @click="openImageModal(message.imageUrl)"
-                  >
+                  />
                   <p v-if="message.content" class="text-sm">{{ message.content }}</p>
                   
                   <!-- AI Analysis button for patient images -->
@@ -347,7 +347,7 @@
                 class="hidden"
                 accept="image/*,.pdf,.doc,.docx"
                 @change="handleFileUpload"
-              >
+              />
               
               <!-- Message input -->
               <div class="flex-1">
@@ -446,7 +446,7 @@
                     :src="photo.thumbnail"
                     :alt="`Problem photo ${photo.id}`"
                     class="w-full h-24 object-cover rounded-lg"
-                  >
+                  />
                   <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -520,7 +520,7 @@
     <!-- Image Modal -->
     <div v-if="showImageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" @click="closeImageModal">
       <div class="max-w-4xl max-h-full p-4">
-        <img :src="modalImageUrl" alt="Full size image" class="max-w-full max-h-full object-contain rounded-lg">
+        <img :src="modalImageUrl" alt="Full size image" class="max-w-full max-h-full object-contain rounded-lg" />
       </div>
     </div>
   </div>
@@ -627,6 +627,43 @@ export default {
         priority: 'High',
         status: 'New',
         reportedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        hasPhotos: true,
+        photoCount: 2,
+        photos: [
+          {
+            id: 'ph1',
+            url: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop',
+            thumbnail: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=200&h=150&fit=crop'
+          },
+          {
+            id: 'ph2',
+            url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800&h=600&fit=crop',
+            thumbnail: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=200&h=150&fit=crop'
+          }
+        ]
+      },
+      {
+        id: 'pr2',
+        patientId: 'P004',
+        patientName: 'Emily Wilson',
+        subject: 'Bleeding gums',
+        description: 'I\'ve noticed my gums have been bleeding when I brush my teeth for the past week. There\'s also some swelling.',
+        priority: 'Medium',
+        status: 'In Progress',
+        reportedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
+        hasPhotos: false,
+        photoCount: 0,
+        photos: []
+      },
+      {
+        id: 'pr3',
+        patientId: 'P005',
+        patientName: 'Robert Brown',
+        subject: 'Loose crown',
+        description: 'My crown on the right side feels loose when I chew. It happened yesterday during lunch.',
+        priority: 'Low',
+        status: 'New',
+        reportedAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
         hasPhotos: false,
         photoCount: 0,
         photos: []
@@ -844,7 +881,7 @@ export default {
     
     // Navigation methods
     const viewPatientProfile = (patientId) => {
-      router.push(`/doctor-secretary/patients/${patientId}`)
+      router.push(`/doctor-secretary/patient/${patientId}`)
     }
     
     const openClinicalNotes = (patientId) => {
@@ -1115,161 +1152,4 @@ select:focus {
 .group:hover .group-hover\\:bg-opacity-20 {
   background-color: rgba(0, 0, 0, 0.2);
 }
-</style>(Date.now() - 3 * 60 * 60 * 1000),
-        hasPhotos: true,
-        photoCount: 2,
-        photos: [
-          {
-            id: 'ph1',
-            url: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop',
-            thumbnail: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=200&h=150&fit=crop'
-          },
-          {
-            id: 'ph2',
-            url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800&h=600&fit=crop',
-            thumbnail: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=200&h=150&fit=crop'
-          }
-        ]
-      },
-      {
-        id: 'pr2',
-        patientId: 'P004',
-        patientName: 'Emily Wilson',
-        subject: 'Bleeding gums',
-        description: 'I\'ve noticed my gums have been bleeding when I brush my teeth for the past week. There\'s also some swelling.',
-        priority: 'Medium',
-        status: 'In Progress',
-        reportedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
-        hasPhotos: false,
-        photoCount: 0,
-        photos: []
-      },
-      {
-        id: 'pr3',
-        patientId: 'P005',
-        patientName: 'Robert Brown',
-        subject: 'Loose crown',
-        description: 'My crown on the right side feels loose when I chew. It happened yesterday during lunch.',
-        priority: 'Low',
-        status: 'New',
-        reportedAt: new Date<!--
-  Communication Hub Component
-  
-  Central communication interface with:
-  - Chat Management (Doctor)
-  - Patient Communication (Secretary)
-  - Problem Reports with color-coded flags
-  - Real-time messaging interface
-  - File sharing and photo analysis
--->
-<template>
-  <div class="h-screen flex flex-col bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white border-b border-gray-200 p-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-xl font-bold text-slate-800">Communication Hub</h1>
-          <p class="text-sm text-slate-600">
-            {{ userRole === 'doctor' ? 'Manage patient communications and consultations' : 'Handle patient inquiries and administrative messages' }}
-          </p>
-        </div>
-        
-        <!-- Status Indicator -->
-        <div class="flex items-center space-x-2">
-          <div class="flex items-center space-x-1">
-            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span class="text-sm text-slate-600">Online</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Communication Type Tabs -->
-      <div class="mt-4 flex space-x-1 bg-gray-100 rounded-lg p-1">
-        <button 
-          @click="activeTab = 'chat'"
-          class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors"
-          :class="activeTab === 'chat' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-600 hover:text-slate-800'"
-        >
-          <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
-          {{ userRole === 'doctor' ? 'Chat Management' : 'Patient Communication' }}
-        </button>
-        
-        <button 
-          @click="activeTab = 'problems'"
-          class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors relative"
-          :class="activeTab === 'problems' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-600 hover:text-slate-800'"
-        >
-          <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
-          </svg>
-          Problem Reports
-          <!-- Urgent badge -->
-          <span v-if="urgentProblems > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-            {{ urgentProblems }}
-          </span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Main Content Area -->
-    <div class="flex-1 flex min-h-0">
-      <!-- Sidebar - Chat/Problem List -->
-      <div class="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <!-- Search Bar -->
-        <div class="p-4 border-b border-gray-100">
-          <div class="relative">
-            <input 
-              v-model="searchQuery"
-              type="text"
-              :placeholder="activeTab === 'chat' ? 'Search conversations...' : 'Search reports...'"
-              class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            >
-            <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-        </div>
-
-        <!-- Chat Tab Content -->
-        <div v-if="activeTab === 'chat'" class="flex-1 overflow-y-auto">
-          <div class="p-2 space-y-1">
-            <div
-              v-for="conversation in filteredConversations"
-              :key="conversation.id"
-              class="p-3 rounded-lg cursor-pointer transition-colors"
-              :class="selectedConversation?.id === conversation.id ? 'bg-primary-50 border border-primary-200' : 'hover:bg-gray-50'"
-              @click="selectConversation(conversation)"
-            >
-              <div class="flex items-center space-x-3">
-                <!-- Patient Avatar -->
-                <div class="relative">
-                  <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
-                    <span class="text-sm font-medium text-slate-600">
-                      {{ conversation.patientName.split(' ').map(n => n[0]).join('') }}
-                    </span>
-                  </div>
-                  <!-- Online indicator -->
-                  <div v-if="conversation.isOnline" class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                </div>
-                
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-medium text-slate-800 truncate">{{ conversation.patientName }}</h3>
-                    <span class="text-xs text-slate-500">{{ formatTime(conversation.lastMessage.time) }}</span>
-                  </div>
-                  <p class="text-sm text-slate-600 truncate">{{ conversation.lastMessage.text }}</p>
-                  
-                  <!-- Message indicators -->
-                  <div class="flex items-center justify-between mt-1">
-                    <div class="flex items-center space-x-2">
-                      <!-- Message type badges -->
-                      <span v-if="conversation.hasImages" class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Photos
-                      </span>
-                      
-                      <span v-if="conversation.isUrgent" class="inline-flex items-center px-1.5 py
+</style>
