@@ -1,14 +1,56 @@
 /**
- * Authentication Store - Enhanced for Patient Interface
+ * Authentication Store - Enhanced for Patient Interface + Role Testing
  * 
  * Building on existing auth store structure, adding patient-specific
- * functionality and permissions management.
+ * functionality and permissions management + development role testing.
  * 
  * Location: src/stores/auth.js
  */
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+
+// Mock users for testing (DEVELOPMENT ONLY)
+const mockUsers = {
+  doctor: {
+    id: 'doc_001',
+    username: 'Dr. Sarah Johnson',
+    email: 'sarah.johnson@clinic.com',
+    role: 'doctor',
+    department: 'General Dentistry',
+    isPrimaryAccountHolder: true,
+    familyPermissions: {
+      canManageMembers: true,
+      canViewMedicalData: true,
+      canBookAppointments: true
+    }
+  },
+  secretary: {
+    id: 'sec_001', 
+    username: 'Emma Rodriguez',
+    email: 'emma.rodriguez@clinic.com',
+    role: 'secretary',
+    department: 'Administration',
+    isPrimaryAccountHolder: false,
+    familyPermissions: {
+      canManageMembers: true,
+      canViewMedicalData: true,
+      canBookAppointments: true
+    }
+  },
+  patient: {
+    id: 'pat_001',
+    username: 'John Smith',
+    email: 'john.smith@email.com', 
+    role: 'patient',
+    isPrimaryAccountHolder: true,
+    familyPermissions: {
+      canManageMembers: true,
+      canViewMedicalData: true,
+      canBookAppointments: true
+    }
+  }
+}
 
 export const useAuthStore = defineStore('auth', () => {
   // ==========================================
@@ -158,6 +200,10 @@ export const useAuthStore = defineStore('auth', () => {
   const isTokenValid = () => {
     if (!token.value) return false
     
+    // Skip validation for test mode
+    const testMode = localStorage.getItem('testMode')
+    if (testMode === 'true') return true
+    
     try {
       // Basic JWT expiration check
       const payload = JSON.parse(atob(token.value.split('.')[1]))
@@ -186,19 +232,99 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // ==========================================
+  // TESTING METHODS (DEVELOPMENT ONLY)
+  // ==========================================
+
+  /**
+   * Switch to a test role for development
+   * @param {string} role - Role to switch to ('doctor', 'secretary', 'patient')
+   */
+  const switchTestRole = (role) => {
+    if (process.env.NODE_ENV !== 'development') {
+      console.warn('switchTestRole is only available in development mode')
+      return
+    }
+
+    if (mockUsers[role]) {
+      console.log(`🔄 Switching to ${role} role`)
+      const mockUser = mockUsers[role]
+      const mockToken = `mock_token_${role}_${Date.now()}`
+      
+      user.value = mockUser
+      token.value = mockToken
+      lastActivity.value = Date.now()
+      
+      // Update localStorage
+      localStorage.setItem('authToken', mockToken)
+      localStorage.setItem('user', JSON.stringify(mockUser))
+      localStorage.setItem('userRole', mockUser.role)
+      localStorage.setItem('userId', mockUser.id)
+      localStorage.setItem('lastActivity', lastActivity.value.toString())
+      localStorage.setItem('testMode', 'true')
+      
+      console.log(`✅ Switched to: ${mockUser.username} (${mockUser.role})`)
+      
+      // Reload page to reflect changes
+      window.location.reload()
+    } else {
+      console.error(`Unknown role: ${role}. Available roles:`, Object.keys(mockUsers))
+    }
+  }
+
+  /**
+   * Clear test mode and reset authentication
+   */
+  const clearTestMode = () => {
+    localStorage.removeItem('testMode')
+    clearAuth()
+    console.log('🧹 Test mode cleared')
+    window.location.reload()
+  }
+
+  // ==========================================
   // ACTIONS
   // ==========================================
   
   /**
    * Initialize authentication state from localStorage
    * Called when app starts to restore user session
+   * ENHANCED: Now supports URL-based role testing
    */
   const initializeAuth = () => {
     try {
-      // Retrieve stored authentication data
+      // Check for URL parameter to set test role (DEVELOPMENT ONLY)
+      if (process.env.NODE_ENV === 'development') {
+        const urlParams = new URLSearchParams(window.location.search)
+        const testRole = urlParams.get('role')
+        
+        // If test role is specified in URL, use mock user
+        if (testRole && mockUsers[testRole]) {
+          console.log(`🧪 TESTING MODE: Setting up ${testRole} role`)
+          const mockUser = mockUsers[testRole]
+          const mockToken = `mock_token_${testRole}_${Date.now()}`
+          
+          user.value = mockUser
+          token.value = mockToken
+          lastActivity.value = Date.now()
+          
+          // Store in localStorage for persistence
+          localStorage.setItem('authToken', mockToken)
+          localStorage.setItem('user', JSON.stringify(mockUser))
+          localStorage.setItem('userRole', mockUser.role)
+          localStorage.setItem('userId', mockUser.id)
+          localStorage.setItem('lastActivity', lastActivity.value.toString())
+          localStorage.setItem('testMode', 'true')
+          
+          console.log(`✅ Test user set up: ${mockUser.username} (${mockUser.role})`)
+          return
+        }
+      }
+
+      // Retrieve stored authentication data (normal flow)
       const storedToken = localStorage.getItem('authToken')
       const storedUser = localStorage.getItem('user')
       const storedLastActivity = localStorage.getItem('lastActivity')
+      const testMode = localStorage.getItem('testMode')
       
       // Restore session if valid data exists
       if (storedToken && storedUser) {
@@ -206,19 +332,22 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = JSON.parse(storedUser)
         lastActivity.value = parseInt(storedLastActivity) || Date.now()
         
-        // Validate token
-        if (!isTokenValid()) {
-          console.log('Stored token expired, clearing auth')
-          clearAuth()
+        if (testMode === 'true') {
+          console.log(`✅ Test session restored: ${user.value.username} (${user.value.role})`)
         } else {
-          console.log('Authentication restored from localStorage')
+          // Validate real token (skip validation for test mode)
+          if (!isTokenValid()) {
+            console.log('Stored token expired, clearing auth')
+            clearAuth()
+          } else {
+            console.log('Authentication restored from localStorage')
+          }
         }
       } else {
         console.log('No stored authentication found')
       }
     } catch (error) {
       console.error('Error initializing auth:', error)
-      // Clear corrupted data
       clearAuth()
     }
   }
@@ -243,6 +372,8 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('userRole', userData.role)
       localStorage.setItem('userId', userData.id)
       localStorage.setItem('lastActivity', lastActivity.value.toString())
+      // Clear test mode on real login
+      localStorage.removeItem('testMode')
       
       console.log(`User logged in: ${userData.username} (${userData.role})`)
     } catch (error) {
@@ -252,6 +383,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   /**
    * Logout user and clear all authentication data
+   * ENHANCED: Also clears test mode
    */
   const logout = () => {
     try {
@@ -266,12 +398,18 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.removeItem('userRole')
       localStorage.removeItem('userId')
       localStorage.removeItem('lastActivity')
+      localStorage.removeItem('testMode')
       
       console.log('User logged out successfully')
     } catch (error) {
       console.error('Error during logout:', error)
     }
   }
+
+  /**
+   * Sign out alias for logout (for compatibility)
+   */
+  const signOut = logout
 
   /**
    * Clear authentication data (used for error recovery)
@@ -309,6 +447,10 @@ export const useAuthStore = defineStore('auth', () => {
   const isTokenExpired = () => {
     if (!token.value) return true
     
+    // Skip validation for test mode
+    const testMode = localStorage.getItem('testMode')
+    if (testMode === 'true') return false
+    
     try {
       // Basic JWT expiration check (you may want to enhance this)
       const payload = JSON.parse(atob(token.value.split('.')[1]))
@@ -325,6 +467,10 @@ export const useAuthStore = defineStore('auth', () => {
    * @returns {boolean} True if session is still valid
    */
   const checkSessionTimeout = () => {
+    // Skip timeout check for test mode
+    const testMode = localStorage.getItem('testMode')
+    if (testMode === 'true') return true
+
     const TIMEOUT_DURATION = 30 * 60 * 1000 // 30 minutes
     const currentTime = Date.now()
     
@@ -353,8 +499,9 @@ export const useAuthStore = defineStore('auth', () => {
       if (isAuthenticated.value) {
         checkSessionTimeout()
         
-        // Check if token will expire soon (within 10 minutes)
-        if (token.value) {
+        // Skip token expiry check for test mode
+        const testMode = localStorage.getItem('testMode')
+        if (testMode !== 'true' && token.value) {
           try {
             const payload = JSON.parse(atob(token.value.split('.')[1]))
             const expiryTime = payload.exp * 1000
@@ -418,10 +565,16 @@ export const useAuthStore = defineStore('auth', () => {
     initializeAuth,
     login,
     logout,
+    signOut, // Alias for logout
     clearAuth,
     updateUser,
     updateLastActivity,
     isTokenExpired,
-    checkSessionTimeout
+    checkSessionTimeout,
+    
+    // Testing methods (development only)
+    switchTestRole,
+    clearTestMode,
+    mockUsers // For debugging
   }
 })

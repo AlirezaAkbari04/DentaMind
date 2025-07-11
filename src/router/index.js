@@ -1,5 +1,5 @@
 /**
- * Vue Router Configuration - Complete with Doctor Secretary Routes
+ * Vue Router Configuration - Complete with All Doctor Secretary Routes
  */
 
 import { createRouter, createWebHistory } from 'vue-router'
@@ -22,7 +22,7 @@ const ProfileSettings = () => import('@/views/Patient/ProfileSettings.vue')
 const AllAppointments = () => import('@/views/Patient/AllAppointments.vue')
 const ChatInterface = () => import('@/views/Patient/ChatInterface.vue')
 
-// Doctor Secretary Components - CREATE THESE FILES
+// Doctor Secretary Components
 const DoctorSecretaryLayout = () => import('@/views/DoctorSecretary/DoctorSecretaryLayout.vue')
 const DoctorSecretaryDashboard = () => import('@/views/DoctorSecretary/DoctorSecretaryDashboard.vue')
 const PatientManagement = () => import('@/views/DoctorSecretary/PatientManagement.vue')
@@ -31,6 +31,16 @@ const PatientProfile = () => import('@/views/DoctorSecretary/PatientProfile.vue'
 const ClinicalNotes = () => import('@/views/DoctorSecretary/ClinicalNotes.vue')
 const AIDiagnostics = () => import('@/views/DoctorSecretary/AIDiagnostics.vue')
 const AppointmentApproval = () => import('@/views/DoctorSecretary/AppointmentApproval.vue')
+
+// Additional components that need to be created
+const AppointmentManagement = () => import('@/views/DoctorSecretary/AppointmentManagement.vue')
+const SchedulingDashboard = () => import('@/views/DoctorSecretary/SchedulingDashboard.vue')
+const TaskTemplates = () => import('@/views/DoctorSecretary/TaskTemplates.vue')
+const ComplianceReports = () => import('@/views/DoctorSecretary/ComplianceReports.vue')
+const ReminderSystem = () => import('@/views/DoctorSecretary/ReminderSystem.vue')
+const PatientRecordsOverview = () => import('@/views/DoctorSecretary/PatientRecordsOverview.vue')
+const ClinicFlowManagement = () => import('@/views/DoctorSecretary/ClinicFlowManagement.vue')
+const DoctorSecretaryProfile = () => import('@/views/DoctorSecretary/DoctorSecretaryProfile.vue')
 
 const routes = [
   {
@@ -108,7 +118,7 @@ const routes = [
     ]
   },
 
-  // DOCTOR SECRETARY ROUTES - NEW!
+  // DOCTOR SECRETARY ROUTES
   {
     path: '/doctor-secretary',
     name: 'DoctorSecretaryLayout',
@@ -154,6 +164,55 @@ const routes = [
         meta: { title: 'Patient Profile' }
       },
       
+      // Appointment Center
+      {
+        path: 'appointments',
+        name: 'AppointmentManagement',
+        component: AppointmentManagement,
+        meta: { 
+          title: 'Appointment Management',
+          roles: ['doctor']
+        }
+      },
+      
+      {
+        path: 'appointment-approval',
+        name: 'AppointmentApproval',
+        component: AppointmentApproval,
+        meta: { 
+          title: 'Appointment Approval - Secretary Portal',
+          roles: ['secretary']
+        }
+      },
+      
+      {
+        path: 'scheduling-dashboard',
+        name: 'SchedulingDashboard',
+        component: SchedulingDashboard,
+        meta: { 
+          title: 'Scheduling Dashboard',
+          roles: ['secretary']
+        }
+      },
+      
+      // Task & Compliance
+      {
+        path: 'task-templates',
+        name: 'TaskTemplates',
+        component: TaskTemplates,
+        meta: { 
+          title: 'Task Templates',
+          roles: ['doctor']
+        }
+      },
+      
+      {
+        path: 'compliance-reports',
+        name: 'ComplianceReports',
+        component: ComplianceReports,
+        meta: { title: 'Compliance Reports' }
+      },
+      
       // Doctor-Specific Features
       {
         path: 'clinical-notes',
@@ -175,15 +234,43 @@ const routes = [
         }
       },
       
-      // Secretary-Specific Features
+      // Secretary Tools
       {
-        path: 'appointments/approval',
-        name: 'AppointmentApproval',
-        component: AppointmentApproval,
+        path: 'reminder-system',
+        name: 'ReminderSystem',
+        component: ReminderSystem,
         meta: { 
-          title: 'Appointment Approval - Secretary Portal',
+          title: 'Reminder System',
           roles: ['secretary']
         }
+      },
+      
+      {
+        path: 'patient-records-overview',
+        name: 'PatientRecordsOverview',
+        component: PatientRecordsOverview,
+        meta: { 
+          title: 'Patient Records Overview',
+          roles: ['secretary']
+        }
+      },
+      
+      {
+        path: 'clinic-flow',
+        name: 'ClinicFlowManagement',
+        component: ClinicFlowManagement,
+        meta: { 
+          title: 'Clinic Flow Management',
+          roles: ['secretary']
+        }
+      },
+      
+      // Profile & Settings
+      {
+        path: 'profile',
+        name: 'DoctorSecretaryProfile',
+        component: DoctorSecretaryProfile,
+        meta: { title: 'Profile & Settings' }
       }
     ]
   },

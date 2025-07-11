@@ -3,31 +3,20 @@
   
   Main layout wrapper for doctor and secretary interfaces with:
   - Bottom navigation (3 icons)
-  - Hamburger menu with role-specific options
+  - Hamburger menu on LEFT with role-specific options
   - Toast notifications
   - Responsive design with medical trust colors
+  - Role Switcher for development testing
 -->
 <template>
   <div class="min-h-screen bg-slate-50">
+    <!-- Role Switcher for Development Testing -->
+    <RoleSwitcher />
+    
     <!-- Header with hamburger menu -->
     <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
       <div class="flex items-center justify-between px-4 py-3">
-        <!-- Logo and Role Indicator -->
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="text-lg font-semibold text-slate-800">
-              {{ userRole === 'doctor' ? 'Doctor Portal' : 'Secretary Portal' }}
-            </h1>
-            <p class="text-xs text-slate-500">{{ currentUser?.username || 'User' }}</p>
-          </div>
-        </div>
-
-        <!-- Hamburger Menu Button -->
+        <!-- Hamburger Menu Button - NOW ON LEFT -->
         <button 
           @click="toggleMenu"
           class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -37,6 +26,21 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
+
+        <!-- Logo and Role Indicator - NOW ON RIGHT -->
+        <div class="flex items-center space-x-3">
+          <div>
+            <h1 class="text-lg font-semibold text-slate-800 text-right">
+              {{ userRole === 'doctor' ? 'Doctor Portal' : 'Secretary Portal' }}
+            </h1>
+            <p class="text-xs text-slate-500 text-right">{{ currentUser?.username || 'User' }}</p>
+          </div>
+          <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -79,9 +83,9 @@
           <span class="text-xs font-medium">Dashboard</span>
         </router-link>
 
-        <!-- Right Icon: Communication Hub -->
+        <!-- Right Icon: Communication Hub - FIXED LINK -->
         <router-link 
-          :to="'/doctor-secretary/chat'"
+          :to="'/doctor-secretary/communication'"
           class="nav-item relative"
           :class="isCommunicationActive ? 'nav-item-active' : ''"
         >
@@ -106,11 +110,11 @@
       />
     </Transition>
 
-    <!-- Hamburger Menu -->
-    <Transition name="menu-slide">
+    <!-- Hamburger Menu - NOW SLIDES FROM LEFT -->
+    <Transition name="menu-slide-left">
       <div 
         v-if="isMenuOpen" 
-        class="fixed top-0 right-0 h-full w-80 bg-white shadow-xl z-50 overflow-y-auto"
+        class="fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-50 overflow-y-auto"
       >
         <div class="p-4">
           <!-- Menu Header -->
@@ -301,9 +305,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import RoleSwitcher from '@/components/dev/RoleSwitcher.vue'
 
 export default {
   name: 'DoctorSecretaryLayout',
+  components: {
+    RoleSwitcher
+  },
   setup() {
     const router = useRouter()
     const authStore = useAuthStore()
@@ -339,9 +347,7 @@ export default {
     
     const isCommunicationActive = computed(() => {
       const path = router.currentRoute.value.path
-      return path.includes('/chat') || 
-             path.includes('/communication') || 
-             path.includes('/problem-reports')
+      return path.includes('/communication')
     })
     
     const toastClasses = computed(() => {
@@ -497,14 +503,15 @@ export default {
   opacity: 0;
 }
 
-.menu-slide-enter-active,
-.menu-slide-leave-active {
+/* LEFT SIDE MENU ANIMATION */
+.menu-slide-left-enter-active,
+.menu-slide-left-leave-active {
   transition: transform 0.3s ease;
 }
 
-.menu-slide-enter-from,
-.menu-slide-leave-to {
-  transform: translateX(100%);
+.menu-slide-left-enter-from,
+.menu-slide-left-leave-to {
+  transform: translateX(-100%);
 }
 
 .toast-enter-active,
