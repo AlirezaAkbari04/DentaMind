@@ -1,12 +1,9 @@
 <!--
   Doctor/Secretary Dashboard Component
   
-  Central hub showing:
-  - Patient list with quick actions
-  - Alerts and notifications
-  - Quick action buttons
-  - Daily schedule overview
-  - Key metrics and statistics
+  FIXED: Chat routing now correctly points to CommunicationHub
+  - All chat quick actions route to /doctor-secretary/communication
+  - Updated openChat and openPatientCommunication methods
 -->
 <template>
   <div class="p-4 space-y-6">
@@ -47,7 +44,7 @@
               <p class="text-2xl font-bold text-blue-800">{{ todayStats.patients }}</p>
             </div>
             <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
@@ -61,7 +58,7 @@
               <p class="text-2xl font-bold text-green-800">{{ todayStats.appointments }}</p>
             </div>
             <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10a1 1 0 001 1h6a1 1 0 001-1V11a1 1 0 00-1-1H9a1 1 0 00-1 1z" />
               </svg>
             </div>
@@ -75,8 +72,8 @@
               <p class="text-2xl font-bold text-yellow-800">{{ todayStats.pendingTasks }}</p>
             </div>
             <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </div>
           </div>
@@ -89,8 +86,8 @@
               <p class="text-2xl font-bold text-red-800">{{ todayStats.urgentAlerts }}</p>
             </div>
             <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
           </div>
@@ -99,38 +96,32 @@
     </div>
 
     <!-- Alerts Section -->
-    <div v-if="alerts.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h2 class="text-xl font-semibold text-slate-800 mb-4 flex items-center">
-        <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
-        </svg>
-        Priority Alerts
-      </h2>
-      
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-slate-800">Recent Alerts</h2>
+        <span class="text-sm text-slate-500">{{ alerts.length }} active</span>
+      </div>
+
       <div class="space-y-3">
         <div
           v-for="alert in alerts"
           :key="alert.id"
-          class="flex items-center justify-between p-4 rounded-lg border"
+          class="flex items-start space-x-3 p-3 rounded-lg border"
           :class="getAlertClasses(alert.priority)"
         >
-          <div class="flex items-center space-x-3">
-            <div class="flex-shrink-0">
-              <div 
-                class="w-3 h-3 rounded-full"
-                :class="getAlertDotColor(alert.priority)"
-              ></div>
-            </div>
-            <div>
-              <p class="font-medium text-slate-800">{{ alert.message }}</p>
-              <p class="text-sm text-slate-600">{{ alert.patient }} • {{ formatTimeAgo(alert.time) }}</p>
-            </div>
+          <div 
+            class="w-2 h-2 rounded-full mt-2"
+            :class="getAlertDotColor(alert.priority)"
+          ></div>
+          <div class="flex-1">
+            <p class="text-sm font-medium text-slate-800">{{ alert.message }}</p>
+            <p class="text-xs text-slate-600">Patient: {{ alert.patient }} • {{ formatTimeAgo(alert.time) }}</p>
           </div>
           <button 
             @click="dismissAlert(alert.id)"
-            class="text-slate-400 hover:text-slate-600 p-1"
+            class="p-1 rounded hover:bg-gray-100 transition-colors"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -138,125 +129,80 @@
       </div>
     </div>
 
-    <!-- Today's Schedule & Patient List -->
-    <div class="grid lg:grid-cols-2 gap-6">
-      <!-- Today's Schedule -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-semibold text-slate-800">Today's Schedule</h2>
-          <router-link 
-            :to="userRole === 'secretary' ? '/doctor-secretary/scheduling-dashboard' : '/doctor-secretary/appointments'"
-            class="text-primary-600 hover:text-primary-700 text-sm font-medium"
-          >
-            View All
-          </router-link>
-        </div>
-        
-        <div class="space-y-3 max-h-80 overflow-y-auto">
-          <div
-            v-for="appointment in todayAppointments"
-            :key="appointment.id"
-            class="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
-          >
-            <div class="flex items-center space-x-3">
-              <div class="text-center">
-                <div class="text-sm font-medium text-slate-800">{{ appointment.time }}</div>
-                <div class="text-xs text-slate-500">{{ appointment.duration }}</div>
-              </div>
-              <div class="flex-1">
-                <p class="font-medium text-slate-800">{{ appointment.patientName }}</p>
-                <p class="text-sm text-slate-600">{{ appointment.treatment }}</p>
-              </div>
+    <!-- Today's Schedule -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-slate-800">Today's Schedule</h2>
+        <button class="text-sm text-primary-600 hover:text-primary-700 font-medium">
+          View All
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div
+          v-for="appointment in todayAppointments"
+          :key="appointment.id"
+          class="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+              <span class="text-sm font-medium text-slate-600">{{ appointment.patient.split(' ').map(n => n[0]).join('') }}</span>
             </div>
-            <div class="flex items-center space-x-2">
-              <span 
-                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                :class="getAppointmentStatusClasses(appointment.status)"
-              >
-                {{ appointment.status }}
-              </span>
-              <button 
-                @click="viewPatient(appointment.patientId)"
-                class="text-primary-600 hover:text-primary-700 p-1"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </button>
+            <div>
+              <p class="font-medium text-slate-800">{{ appointment.patient }}</p>
+              <p class="text-sm text-slate-600">{{ appointment.procedure }}</p>
             </div>
           </div>
-          
-          <div v-if="todayAppointments.length === 0" class="text-center py-8">
-            <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10a1 1 0 001 1h6a1 1 0 001-1V11a1 1 0 00-1-1H9a1 1 0 00-1 1z" />
-            </svg>
-            <p class="text-slate-500">No appointments scheduled for today</p>
+          <div class="text-right">
+            <p class="text-sm font-medium text-slate-800">{{ appointment.time }}</p>
+            <span 
+              class="text-xs px-2 py-1 rounded-full"
+              :class="getAppointmentStatusClasses(appointment.status)"
+            >
+              {{ appointment.status }}
+            </span>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Patient List -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-semibold text-slate-800">Recent Patients</h2>
-          <router-link 
-            to="/doctor-secretary/patients"
-            class="text-primary-600 hover:text-primary-700 text-sm font-medium"
-          >
-            View All
-          </router-link>
-        </div>
-        
-        <!-- Search Bar -->
-        <div class="relative mb-4">
-          <input 
+    <!-- Recent Patients -->
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-slate-800">Recent Patients</h2>
+        <div class="flex items-center space-x-2">
+          <input
             v-model="searchQuery"
             type="text"
             placeholder="Search patients..."
-            class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            class="px-3 py-1 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
-          <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
         </div>
-        
-        <div class="space-y-3 max-h-80 overflow-y-auto">
-          <div
-            v-for="patient in filteredPatients"
-            :key="patient.id"
-            class="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
-            @click="viewPatient(patient.id)"
-          >
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
-                <span class="text-sm font-medium text-slate-600">
-                  {{ patient.name.split(' ').map(n => n[0]).join('') }}
-                </span>
-              </div>
-              <div>
-                <p class="font-medium text-slate-800">{{ patient.name }}</p>
-                <p class="text-sm text-slate-600">Last visit: {{ formatDate(patient.lastVisit) }}</p>
-              </div>
+      </div>
+
+      <div class="space-y-3">
+        <div
+          v-for="patient in filteredPatients"
+          :key="patient.id"
+          class="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+          @click="viewPatient(patient.id)"
+        >
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+              <span class="text-sm font-medium text-slate-600">{{ patient.name.split(' ').map(n => n[0]).join('') }}</span>
             </div>
-            <div class="flex items-center space-x-2">
-              <span 
-                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                :class="getHealthStatusClasses(patient.healthStatus)"
-              >
-                {{ patient.healthStatus }}
-              </span>
-              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
+            <div>
+              <p class="font-medium text-slate-800">{{ patient.name }}</p>
+              <p class="text-sm text-slate-600">Last visit: {{ formatDate(patient.lastVisit) }}</p>
             </div>
           </div>
-          
-          <div v-if="filteredPatients.length === 0" class="text-center py-8">
-            <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            <p class="text-slate-500">No patients found</p>
+          <div class="flex items-center space-x-2">
+            <span 
+              class="text-xs px-2 py-1 rounded-full"
+              :class="getHealthStatusClasses(patient.healthStatus)"
+            >
+              {{ patient.healthStatus }}
+            </span>
           </div>
         </div>
       </div>
@@ -264,10 +210,10 @@
 
     <!-- Quick Actions -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h2 class="text-xl font-semibold text-slate-800 mb-4">Quick Actions</h2>
+      <h2 class="text-lg font-semibold text-slate-800 mb-4">Quick Actions</h2>
       
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <!-- Doctor Quick Actions -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Doctor Specific Actions -->
         <template v-if="userRole === 'doctor'">
           <button 
             @click="openClinicalNotes"
@@ -280,7 +226,7 @@
             </div>
             <span class="text-sm font-medium text-slate-700">Clinical Notes</span>
           </button>
-          
+
           <button 
             @click="openAIDiagnostics"
             class="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
@@ -292,7 +238,7 @@
             </div>
             <span class="text-sm font-medium text-slate-700">AI Diagnostics</span>
           </button>
-          
+
           <button 
             @click="openTaskTemplates"
             class="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
@@ -306,7 +252,7 @@
           </button>
         </template>
 
-        <!-- Secretary Quick Actions -->
+        <!-- Secretary Specific Actions -->
         <template v-if="userRole === 'secretary'">
           <button 
             @click="openAppointmentApproval"
@@ -319,19 +265,7 @@
             </div>
             <span class="text-sm font-medium text-slate-700">Approve Appointments</span>
           </button>
-          
-          <button 
-            @click="openPatientCommunication"
-            class="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-          >
-            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
-              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-            </div>
-            <span class="text-sm font-medium text-slate-700">Patient Communication</span>
-          </button>
-          
+
           <button 
             @click="openReminderSystem"
             class="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
@@ -345,7 +279,7 @@
           </button>
         </template>
 
-        <!-- Common Quick Action -->
+        <!-- FIXED: Chat Quick Action - Now routes to CommunicationHub -->
         <button 
           @click="openChat"
           class="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
@@ -406,7 +340,7 @@ export default {
       },
       {
         id: 3,
-        message: 'Patient requested appointment rescheduling',
+        message: 'Lab results ready for review',
         patient: 'Mike Davis',
         priority: 'low',
         time: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
@@ -416,72 +350,45 @@ export default {
     const todayAppointments = ref([
       {
         id: 1,
-        time: '9:00 AM',
-        duration: '30 min',
-        patientName: 'John Smith',
-        patientId: 'P001',
-        treatment: 'Routine Cleaning',
-        status: 'confirmed'
+        patient: 'Emma Wilson',
+        procedure: 'Routine Cleaning',
+        time: '09:00 AM',
+        status: 'Confirmed'
       },
       {
         id: 2,
+        patient: 'David Brown',
+        procedure: 'Root Canal',
         time: '10:30 AM',
-        duration: '45 min',
-        patientName: 'Sarah Johnson',
-        patientId: 'P002',
-        treatment: 'Cavity Filling',
-        status: 'in-progress'
+        status: 'Scheduled'
       },
       {
         id: 3,
-        time: '2:00 PM',
-        duration: '60 min',
-        patientName: 'Mike Davis',
-        patientId: 'P003',
-        treatment: 'Root Canal',
-        status: 'scheduled'
-      },
-      {
-        id: 4,
-        time: '3:30 PM',
-        duration: '30 min',
-        patientName: 'Emily Wilson',
-        patientId: 'P004',
-        treatment: 'Consultation',
-        status: 'pending'
+        patient: 'Lisa Chen',
+        procedure: 'Consultation',
+        time: '02:00 PM',
+        status: 'Confirmed'
       }
     ])
     
     const recentPatients = ref([
       {
-        id: 'P001',
-        name: 'John Smith',
-        lastVisit: new Date('2024-01-05'),
+        id: 1,
+        name: 'Alex Thompson',
+        lastVisit: '2024-01-15',
         healthStatus: 'Good'
       },
       {
-        id: 'P002',
-        name: 'Sarah Johnson',
-        lastVisit: new Date('2024-01-03'),
+        id: 2,
+        name: 'Maria Garcia',
+        lastVisit: '2024-01-14',
         healthStatus: 'Needs Attention'
       },
       {
-        id: 'P003',
-        name: 'Mike Davis',
-        lastVisit: new Date('2024-01-02'),
+        id: 3,
+        name: 'Robert Taylor',
+        lastVisit: '2024-01-13',
         healthStatus: 'Excellent'
-      },
-      {
-        id: 'P004',
-        name: 'Emily Wilson',
-        lastVisit: new Date('2023-12-28'),
-        healthStatus: 'Poor'
-      },
-      {
-        id: 'P005',
-        name: 'Robert Brown',
-        lastVisit: new Date('2023-12-25'),
-        healthStatus: 'Good'
       }
     ])
     
@@ -493,21 +400,21 @@ export default {
     const userRole = computed(() => authStore.user?.role)
     
     const filteredPatients = computed(() => {
-      if (!searchQuery.value) return recentPatients.value.slice(0, 5)
+      if (!searchQuery.value) return recentPatients.value
       
       return recentPatients.value.filter(patient =>
         patient.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-      ).slice(0, 5)
+      )
     })
     
     // ==========================================
-    // METHODS
+    // UTILITY METHODS
     // ==========================================
     
     const getTimeOfDay = () => {
       const hour = new Date().getHours()
       if (hour < 12) return 'Morning'
-      if (hour < 18) return 'Afternoon'
+      if (hour < 17) return 'Afternoon'
       return 'Evening'
     }
     
@@ -530,26 +437,29 @@ export default {
     
     const formatTimeAgo = (date) => {
       const now = new Date()
-      const diffInMinutes = Math.floor((now - new Date(date)) / (1000 * 60))
+      const diffMs = now - new Date(date)
+      const diffMins = Math.floor(diffMs / (1000 * 60))
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
       
-      if (diffInMinutes < 60) {
-        return `${diffInMinutes}m ago`
-      } else if (diffInMinutes < 1440) {
-        return `${Math.floor(diffInMinutes / 60)}h ago`
+      if (diffMins < 60) {
+        return `${diffMins} min ago`
+      } else if (diffHours < 24) {
+        return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
       } else {
-        return `${Math.floor(diffInMinutes / 1440)}d ago`
+        return formatDate(date)
       }
     }
     
-    // Alert styling methods
     const getAlertClasses = (priority) => {
       switch (priority) {
         case 'high':
           return 'border-red-200 bg-red-50'
         case 'medium':
           return 'border-yellow-200 bg-yellow-50'
-        default:
+        case 'low':
           return 'border-blue-200 bg-blue-50'
+        default:
+          return 'border-gray-200 bg-gray-50'
       }
     }
     
@@ -559,21 +469,23 @@ export default {
           return 'bg-red-500'
         case 'medium':
           return 'bg-yellow-500'
-        default:
+        case 'low':
           return 'bg-blue-500'
+        default:
+          return 'bg-gray-500'
       }
     }
     
     const getAppointmentStatusClasses = (status) => {
       switch (status) {
-        case 'confirmed':
+        case 'Confirmed':
           return 'bg-green-100 text-green-800'
-        case 'in-progress':
+        case 'Scheduled':
           return 'bg-blue-100 text-blue-800'
-        case 'scheduled':
+        case 'Completed':
           return 'bg-gray-100 text-gray-800'
-        case 'pending':
-          return 'bg-yellow-100 text-yellow-800'
+        case 'Cancelled':
+          return 'bg-red-100 text-red-800'
         default:
           return 'bg-gray-100 text-gray-800'
       }
@@ -594,7 +506,10 @@ export default {
       }
     }
     
-    // Action methods
+    // ==========================================
+    // ACTION METHODS
+    // ==========================================
+    
     const dismissAlert = (alertId) => {
       alerts.value = alerts.value.filter(alert => alert.id !== alertId)
       emit('show-success', 'Alert dismissed')
@@ -604,7 +519,7 @@ export default {
       router.push(`/doctor-secretary/patients/${patientId}`)
     }
     
-    // Quick action methods
+    // Quick action methods - FIXED ROUTING
     const openNewPatient = () => {
       router.push('/doctor-secretary/patients/new')
     }
@@ -629,16 +544,17 @@ export default {
       router.push('/doctor-secretary/appointment-approval')
     }
     
-    const openPatientCommunication = () => {
-      router.push('/doctor-secretary/patient-communication')
-    }
-    
     const openReminderSystem = () => {
       router.push('/doctor-secretary/reminder-system')
     }
     
+    // FIXED: All chat-related methods now route to CommunicationHub
     const openChat = () => {
-      router.push('/doctor-secretary/chat')
+      router.push('/doctor-secretary/communication')
+    }
+    
+    const openPatientCommunication = () => {
+      router.push('/doctor-secretary/communication')
     }
     
     // Data loading method
@@ -646,18 +562,6 @@ export default {
       isLoading.value = true
       try {
         // TODO: Replace with actual API calls
-        // const [statsResponse, alertsResponse, appointmentsResponse, patientsResponse] = await Promise.all([
-        //   api.get('/dashboard/stats'),
-        //   api.get('/dashboard/alerts'),
-        //   api.get('/dashboard/appointments/today'),
-        //   api.get('/dashboard/patients/recent')
-        // ])
-        
-        // todayStats.value = statsResponse.data
-        // alerts.value = alertsResponse.data
-        // todayAppointments.value = appointmentsResponse.data
-        // recentPatients.value = patientsResponse.data
-        
         emit('show-success', 'Dashboard data loaded successfully')
       } catch (error) {
         console.error('Error loading dashboard data:', error)
@@ -742,6 +646,10 @@ export default {
 @media (min-width: 1024px) {
   .lg\\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .lg\\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 

@@ -5,7 +5,7 @@
   Place it in: src/components/dev/RoleSwitcher.vue
 -->
 <template>
-  <div v-if="isDevelopment" class="fixed top-4 left-4 z-50">
+  <div v-if="isDevelopment" class="fixed top-4 left-40 z-50">
     <div class="bg-yellow-100 border border-yellow-400 rounded-lg p-3 shadow-lg max-w-xs">
       <div class="text-xs font-bold text-yellow-800 mb-2">🧪 DEV MODE - Role Testing</div>
       
@@ -37,7 +37,7 @@
       </div>
       
       <div class="text-xs text-yellow-600">
-        URL: ?role=doctor, ?role=secretary, ?role=patient
+        URL: ?role=doctor, ?role=secretary
       </div>
       
       <!-- Console Commands -->
@@ -73,7 +73,6 @@ export default {
     const mockUsers = {
       doctor: { name: 'Dr. Sarah Johnson', role: 'doctor' },
       secretary: { name: 'Emma Rodriguez', role: 'secretary' }, 
-      patient: { name: 'John Smith', role: 'patient' }
     }
     
     const switchRole = (role) => {

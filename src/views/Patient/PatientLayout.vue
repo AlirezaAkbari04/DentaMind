@@ -71,7 +71,7 @@
     </nav>
 
     <!-- Hamburger Menu -->
-    <div class="fixed top-4 right-4 z-50" v-if="showHamburgerMenu">
+    <div class="fixed top-4 left-4 z-50" v-if="showHamburgerMenu">
       <button
         @click="toggleMenu"
         class="p-3 bg-white rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
@@ -80,6 +80,18 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
+    </div>
+    <!-- ADD: Patient Info - TOP RIGHT -->
+    <div class="fixed top-4 right-4 z-50" v-if="showHamburgerMenu">
+      <div class="flex items-center space-x-3 bg-white rounded-lg shadow-lg border border-gray-200 px-4 py-3">
+        <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+          <span class="text-primary-600 text-sm font-semibold">{{ userInitials }}</span>
+    </div>
+    <div>
+      <div class="font-medium text-slate-800 text-sm">{{ userName }}</div>
+      <div class="text-xs text-slate-500">{{ userRole }}</div>
+        </div>
+      </div>
     </div>
 
     <!-- Hamburger Menu Overlay -->
@@ -92,10 +104,10 @@
     </transition>
 
     <!-- Hamburger Menu Panel -->
-    <transition name="menu-slide">
+    <transition name="menu-slide-left">
       <div
         v-if="isMenuOpen"
-        class="fixed top-0 right-0 h-full w-80 bg-white shadow-xl z-50 transform"
+        class="fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-50 transform"
       >
         <!-- Menu Header -->
         <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
@@ -523,6 +535,17 @@ export default {
   transform: translateY(-20px);
 }
 
+.menu-slide-left-enter-active,
+.menu-slide-left-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.menu-slide-left-enter-from,
+.menu-slide-left-leave-to {
+  transform: translateX(-100%);
+}
+
+
 /* Color classes */
 .bg-primary-50 { background-color: #eff6ff; }
 .bg-primary-100 { background-color: #dbeafe; }
@@ -619,6 +642,42 @@ button:focus {
     right: 1rem;
     left: auto;
     margin: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .w-80 {
+    width: 100vw;
+  }
+  
+  .fixed.top-4.left-4 {
+    top: 1rem;
+    left: 1rem;
+  }
+  
+  .fixed.top-4.right-4 {
+    top: 1rem;
+    right: 1rem;
+  }
+  
+  /* Hide patient info on mobile to save space */
+  .fixed.top-4.right-4 > div {
+    display: none;
+  }
+  
+  /* Show only avatar on mobile */
+  .fixed.top-4.right-4 {
+    padding: 0;
+  }
+  
+  .fixed.top-4.right-4 .w-10 {
+    margin: 0;
+  }
+}
+
+@media (min-width: 640px) {
+  .fixed.top-4.right-4 > div {
+    display: flex;
   }
 }
 </style>

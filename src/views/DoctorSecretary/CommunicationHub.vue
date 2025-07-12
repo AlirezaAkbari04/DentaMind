@@ -7,24 +7,37 @@
   - Problem Reports with color-coded flags
   - Real-time messaging interface
   - File sharing and photo analysis
+  - Mobile responsive design
 -->
 <template>
   <div class="h-screen flex flex-col bg-gray-50">
     <!-- Header -->
     <div class="bg-white border-b border-gray-200 p-4">
       <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-xl font-bold text-slate-800">Communication Hub</h1>
-          <p class="text-sm text-slate-600">
-            {{ userRole === 'doctor' ? 'Manage patient communications and consultations' : 'Handle patient inquiries and administrative messages' }}
-          </p>
+        <div class="flex items-center space-x-3">
+          <!-- Mobile Menu Toggle -->
+          <button 
+            @click="showPatientList = !showPatientList"
+            class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          
+          <div>
+            <h1 class="text-lg lg:text-xl font-bold text-slate-800">Communication Hub</h1>
+            <p class="text-sm text-slate-600 hidden sm:block">
+              {{ userRole === 'doctor' ? 'Manage patient communications and consultations' : 'Handle patient inquiries and administrative messages' }}
+            </p>
+          </div>
         </div>
         
         <!-- Status Indicator -->
         <div class="flex items-center space-x-2">
           <div class="flex items-center space-x-1">
             <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span class="text-sm text-slate-600">Online</span>
+            <span class="text-sm text-slate-600 hidden sm:inline">Online</span>
           </div>
         </div>
       </div>
@@ -33,26 +46,28 @@
       <div class="mt-4 flex space-x-1 bg-gray-100 rounded-lg p-1">
         <button 
           @click="activeTab = 'chat'"
-          class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors"
+          class="flex-1 py-2 px-2 lg:px-4 rounded-md text-xs lg:text-sm font-medium transition-colors"
           :class="activeTab === 'chat' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-600 hover:text-slate-800'"
         >
-          <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 inline mr-1 lg:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
-          {{ userRole === 'doctor' ? 'Chat Management' : 'Patient Communication' }}
+          <span class="hidden sm:inline">{{ userRole === 'doctor' ? 'Chat Management' : 'Patient Communication' }}</span>
+          <span class="sm:hidden">Chat</span>
         </button>
         
         <button 
           @click="activeTab = 'problems'"
-          class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors relative"
+          class="flex-1 py-2 px-2 lg:px-4 rounded-md text-xs lg:text-sm font-medium transition-colors relative"
           :class="activeTab === 'problems' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-600 hover:text-slate-800'"
         >
-          <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 inline mr-1 lg:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
-          Problem Reports
+          <span class="hidden sm:inline">Problem Reports</span>
+          <span class="sm:hidden">Problems</span>
           <!-- Urgent badge -->
-          <span v-if="urgentProblems > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          <span v-if="urgentProblems > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center">
             {{ urgentProblems }}
           </span>
         </button>
@@ -62,162 +77,167 @@
     <!-- Main Content Area -->
     <div class="flex-1 flex min-h-0">
       <!-- Sidebar - Chat/Problem List -->
-      <div class="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <!-- Search Bar -->
-        <div class="p-4 border-b border-gray-100">
-          <div class="relative">
-            <input 
-              v-model="searchQuery"
-              type="text"
-              :placeholder="activeTab === 'chat' ? 'Search conversations...' : 'Search reports...'"
-              class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            />
-            <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-        </div>
-
-        <!-- Chat Tab Content -->
-        <div v-if="activeTab === 'chat'" class="flex-1 overflow-y-auto">
-          <div class="p-2 space-y-1">
-            <div
-              v-for="conversation in filteredConversations"
-              :key="conversation.id"
-              class="p-3 rounded-lg cursor-pointer transition-colors"
-              :class="selectedConversation?.id === conversation.id ? 'bg-primary-50 border border-primary-200' : 'hover:bg-gray-50'"
-              @click="selectConversation(conversation)"
-            >
-              <div class="flex items-center space-x-3">
-                <!-- Patient Avatar -->
-                <div class="relative">
-                  <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
-                    <span class="text-sm font-medium text-slate-600">
-                      {{ conversation.patientName.split(' ').map(n => n[0]).join('') }}
-                    </span>
-                  </div>
-                  <!-- Online indicator -->
-                  <div v-if="conversation.isOnline" class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                </div>
-                
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-medium text-slate-800 truncate">{{ conversation.patientName }}</h3>
-                    <span class="text-xs text-slate-500">{{ formatTime(conversation.lastMessage.time) }}</span>
-                  </div>
-                  <p class="text-sm text-slate-600 truncate">{{ conversation.lastMessage.text }}</p>
-                  
-                  <!-- Message indicators -->
-                  <div class="flex items-center justify-between mt-1">
-                    <div class="flex items-center space-x-2">
-                      <!-- Message type badges -->
-                      <span v-if="conversation.hasImages" class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Photos
-                      </span>
-                      <span v-if="conversation.isUrgent" class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                        </svg>
-                        Urgent
-                      </span>
-                    </div>
-                    
-                    <!-- Unread count -->
-                    <span v-if="conversation.unreadCount > 0" class="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-primary-600 rounded-full">
-                      {{ conversation.unreadCount > 9 ? '9+' : conversation.unreadCount }}
-                    </span>
-                  </div>
-                </div>
-              </div>
+      <div 
+        class="bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out"
+        :class="getPatientListClasses()"
+      >
+        <div class="h-full flex flex-col" :class="showPatientList || !isMobile ? 'flex' : 'hidden'">
+          <!-- Search Bar -->
+          <div class="p-4 border-b border-gray-100">
+            <div class="relative">
+              <input 
+                v-model="searchQuery"
+                type="text"
+                :placeholder="activeTab === 'chat' ? 'Search conversations...' : 'Search reports...'"
+                class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+              />
+              <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
           </div>
 
-          <!-- Empty state for chats -->
-          <div v-if="filteredConversations.length === 0" class="p-8 text-center">
-            <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            <p class="text-slate-500">No conversations found</p>
-          </div>
-        </div>
-
-        <!-- Problem Reports Tab Content -->
-        <div v-else class="flex-1 overflow-y-auto">
-          <div class="p-2 space-y-1">
-            <div
-              v-for="problem in filteredProblems"
-              :key="problem.id"
-              class="p-3 rounded-lg cursor-pointer transition-colors border-l-4"
-              :class="[
-                selectedProblem?.id === problem.id ? 'bg-primary-50 border-primary-200' : 'hover:bg-gray-50',
-                getProblemBorderColor(problem.priority)
-              ]"
-              @click="selectProblem(problem)"
-            >
-              <div class="flex items-start space-x-3">
-                <!-- Priority Flag -->
-                <div class="flex-shrink-0">
-                  <div 
-                    class="w-3 h-3 rounded-full mt-1"
-                    :class="getPriorityColor(problem.priority)"
-                  ></div>
-                </div>
-                
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-medium text-slate-800 truncate">{{ problem.patientName }}</h3>
-                    <span class="text-xs text-slate-500">{{ formatTime(problem.reportedAt) }}</span>
-                  </div>
-                  <p class="text-sm text-slate-600 truncate">{{ problem.subject }}</p>
-                  <p class="text-xs text-slate-500 mt-1">{{ problem.description }}</p>
-                  
-                  <!-- Problem indicators -->
-                  <div class="flex items-center justify-between mt-2">
-                    <div class="flex items-center space-x-2">
-                      <!-- Problem type and status -->
-                      <span 
-                        class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium"
-                        :class="getPriorityClasses(problem.priority)"
-                      >
-                        {{ problem.priority }} Priority
+          <!-- Chat Tab Content -->
+          <div v-if="activeTab === 'chat'" class="flex-1 overflow-y-auto">
+            <div class="p-2 space-y-1">
+              <div
+                v-for="conversation in filteredConversations"
+                :key="conversation.id"
+                class="p-3 rounded-lg cursor-pointer transition-colors"
+                :class="selectedConversation?.id === conversation.id ? 'bg-primary-50 border border-primary-200' : 'hover:bg-gray-50'"
+                @click="selectConversation(conversation)"
+              >
+                <div class="flex items-center space-x-3">
+                  <!-- Patient Avatar -->
+                  <div class="relative">
+                    <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
+                      <span class="text-sm font-medium text-slate-600">
+                        {{ conversation.patientName.split(' ').map(n => n[0]).join('') }}
                       </span>
+                    </div>
+                    <!-- Online indicator -->
+                    <div v-if="conversation.isOnline" class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                  </div>
+                  
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                      <h3 class="text-sm font-medium text-slate-800 truncate">{{ conversation.patientName }}</h3>
+                      <span class="text-xs text-slate-500">{{ formatTime(conversation.lastMessage.time) }}</span>
+                    </div>
+                    <p class="text-sm text-slate-600 truncate">{{ conversation.lastMessage.text }}</p>
+                    
+                    <!-- Message indicators -->
+                    <div class="flex items-center justify-between mt-1">
+                      <div class="flex items-center space-x-2">
+                        <!-- Message type badges -->
+                        <span v-if="conversation.hasImages" class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          Photos
+                        </span>
+                        <span v-if="conversation.isUrgent" class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                          </svg>
+                          Urgent
+                        </span>
+                      </div>
                       
-                      <span v-if="problem.hasPhotos" class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        {{ problem.photoCount }} Photos
+                      <!-- Unread count -->
+                      <span v-if="conversation.unreadCount > 0" class="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-primary-600 rounded-full">
+                        {{ conversation.unreadCount > 9 ? '9+' : conversation.unreadCount }}
                       </span>
                     </div>
-                    
-                    <!-- Status indicator -->
-                    <span 
-                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                      :class="getStatusClasses(problem.status)"
-                    >
-                      {{ problem.status }}
-                    </span>
                   </div>
                 </div>
               </div>
             </div>
+
+            <!-- Empty state for chats -->
+            <div v-if="filteredConversations.length === 0" class="p-8 text-center">
+              <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <p class="text-slate-500">No conversations found</p>
+            </div>
           </div>
 
-          <!-- Empty state for problems -->
-          <div v-if="filteredProblems.length === 0" class="p-8 text-center">
-            <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-            <p class="text-slate-500">No problem reports found</p>
+          <!-- Problem Reports Tab Content -->
+          <div v-else class="flex-1 overflow-y-auto">
+            <div class="p-2 space-y-1">
+              <div
+                v-for="problem in filteredProblems"
+                :key="problem.id"
+                class="p-3 rounded-lg cursor-pointer transition-colors border-l-4"
+                :class="[
+                  selectedProblem?.id === problem.id ? 'bg-primary-50 border-primary-200' : 'hover:bg-gray-50',
+                  getProblemBorderColor(problem.priority)
+                ]"
+                @click="selectProblem(problem)"
+              >
+                <div class="flex items-start space-x-3">
+                  <!-- Priority Flag -->
+                  <div class="flex-shrink-0">
+                    <div 
+                      class="w-3 h-3 rounded-full mt-1"
+                      :class="getPriorityColor(problem.priority)"
+                    ></div>
+                  </div>
+                  
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                      <h3 class="text-sm font-medium text-slate-800 truncate">{{ problem.patientName }}</h3>
+                      <span class="text-xs text-slate-500">{{ formatTime(problem.reportedAt) }}</span>
+                    </div>
+                    <p class="text-sm text-slate-600 truncate">{{ problem.subject }}</p>
+                    <p class="text-xs text-slate-500 mt-1">{{ problem.description }}</p>
+                    
+                    <!-- Problem indicators -->
+                    <div class="flex items-center justify-between mt-2">
+                      <div class="flex items-center space-x-2">
+                        <!-- Problem type and status -->
+                        <span 
+                          class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium"
+                          :class="getPriorityClasses(problem.priority)"
+                        >
+                          {{ problem.priority }} Priority
+                        </span>
+                        
+                        <span v-if="problem.hasPhotos" class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          {{ problem.photoCount }} Photos
+                        </span>
+                      </div>
+                      
+                      <!-- Status indicator -->
+                      <span 
+                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                        :class="getStatusClasses(problem.status)"
+                      >
+                        {{ problem.status }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty state for problems -->
+            <div v-if="filteredProblems.length === 0" class="p-8 text-center">
+              <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <p class="text-slate-500">No problem reports found</p>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Main Chat/Problem View Area -->
-      <div class="flex-1 flex flex-col">
+      <div class="flex-1 flex flex-col" :class="showPatientList && isMobile ? 'hidden' : 'flex'">
         <!-- No selection state -->
         <div v-if="!selectedConversation && !selectedProblem" class="flex-1 flex items-center justify-center bg-gray-50">
           <div class="text-center">
@@ -239,6 +259,16 @@
           <div class="bg-white border-b border-gray-200 p-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-3">
+                <!-- Back button for mobile -->
+                <button 
+                  @click="backToPatientList"
+                  class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                
                 <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
                   <span class="text-sm font-medium text-slate-600">
                     {{ selectedConversation.patientName.split(' ').map(n => n[0]).join('') }}
@@ -381,6 +411,16 @@
             <div class="flex items-center justify-between">
               <div>
                 <div class="flex items-center space-x-3">
+                  <!-- Back button for mobile -->
+                  <button 
+                    @click="backToPatientList"
+                    class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  
                   <div 
                     class="w-4 h-4 rounded-full"
                     :class="getPriorityColor(selectedProblem.priority)"
@@ -518,16 +558,24 @@
     </div>
 
     <!-- Image Modal -->
-    <div v-if="showImageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" @click="closeImageModal">
-      <div class="max-w-4xl max-h-full p-4">
+    <div v-if="showImageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" @click="closeImageModal">
+      <div class="max-w-4xl max-h-full">
         <img :src="modalImageUrl" alt="Full size image" class="max-w-full max-h-full object-contain rounded-lg" />
+        <button 
+          @click="closeImageModal"
+          class="absolute top-2 right-2 lg:top-4 lg:right-4 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-colors"
+        >
+          <svg class="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -550,6 +598,8 @@ export default {
     const problemResponse = ref('')
     const showImageModal = ref(false)
     const modalImageUrl = ref('')
+    const showPatientList = ref(false) // For mobile navigation
+    const windowWidth = ref(window.innerWidth)
     
     // Mock data - replace with API calls
     const conversations = ref([
@@ -676,6 +726,8 @@ export default {
     
     const userRole = computed(() => authStore.user?.role)
     
+    const isMobile = computed(() => windowWidth.value < 1024)
+    
     const urgentProblems = computed(() => {
       return problems.value.filter(p => p.priority === 'High' && p.status === 'New').length
     })
@@ -696,6 +748,18 @@ export default {
         prob.subject.toLowerCase().includes(searchQuery.value.toLowerCase())
       )
     })
+    
+    // ==========================================
+    // LAYOUT METHODS
+    // ==========================================
+    
+    const getPatientListClasses = () => {
+      if (isMobile.value) {
+        return showPatientList.value ? 'w-full' : 'w-0'
+      }
+      
+      return 'w-80' // Full width on desktop
+    }
     
     // ==========================================
     // METHODS
@@ -776,6 +840,7 @@ export default {
     const selectConversation = (conversation) => {
       selectedConversation.value = conversation
       selectedProblem.value = null
+      showPatientList.value = false // Hide patient list on mobile after selection
       
       // Mark as read
       conversation.unreadCount = 0
@@ -784,6 +849,13 @@ export default {
     const selectProblem = (problem) => {
       selectedProblem.value = problem
       selectedConversation.value = null
+      showPatientList.value = false // Hide patient list on mobile after selection
+    }
+    
+    const backToPatientList = () => {
+      if (isMobile.value) {
+        showPatientList.value = true
+      }
     }
     
     // Message handling
@@ -908,11 +980,26 @@ export default {
     }
     
     // ==========================================
+    // WINDOW RESIZE HANDLER
+    // ==========================================
+    
+    const handleResize = () => {
+      windowWidth.value = window.innerWidth
+    }
+    
+    // ==========================================
     // LIFECYCLE
     // ==========================================
     
     onMounted(() => {
       loadCommunicationData()
+      
+      // Add resize listener
+      window.addEventListener('resize', handleResize)
+    })
+    
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleResize)
     })
     
     // ==========================================
@@ -929,14 +1016,19 @@ export default {
       problemResponse,
       showImageModal,
       modalImageUrl,
+      showPatientList,
       conversations,
       problems,
       
       // Computed
       userRole,
+      isMobile,
       urgentProblems,
       filteredConversations,
       filteredProblems,
+      
+      // Layout methods
+      getPatientListClasses,
       
       // Methods
       formatTime,
@@ -946,6 +1038,7 @@ export default {
       getStatusClasses,
       selectConversation,
       selectProblem,
+      backToPatientList,
       sendMessage,
       handleFileUpload,
       updateProblemStatus,
@@ -980,6 +1073,27 @@ export default {
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Mobile optimizations */
+@media (max-width: 1023px) {
+  .max-w-xs {
+    max-width: 16rem;
+  }
+  
+  /* Larger touch targets on mobile */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Focus states for accessibility */
+button:focus,
+input:focus,
+textarea:focus {
+  outline: 2px solid #0066CC;
+  outline-offset: 2px;
 }
 
 /* Hover effects */
