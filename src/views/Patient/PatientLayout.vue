@@ -9,15 +9,126 @@
       </div>
     </div>
 
-    <!-- Main Content Area -->
-    <div class="pb-20" :class="{ 'blur-sm': isLoading }">
-      <!-- Route-specific content -->
-      <router-view 
-        :key="$route.fullPath"
-        @loading="handleLoading"
-        @error="handleError"
+    <!-- Header with hamburger menu (SAME LOGIC AS DoctorSecretaryLayout) -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+      <div class="flex items-center justify-between px-4 py-3">
+        <!-- Hamburger Menu Button - LEFT SIDE -->
+        <button 
+          @click="toggleMenu"
+          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          aria-label="Open menu"
+        >
+          <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <!-- Patient Info and Role Indicator - RIGHT SIDE -->
+        <div class="flex items-center space-x-3">
+          <div>
+            <h1 class="text-lg font-semibold text-slate-800 text-right">Patient Portal</h1>
+            <p class="text-xs text-slate-500 text-right">{{ userName }}</p>
+          </div>
+          <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+            <span class="text-white text-sm font-semibold">{{ userInitials }}</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hamburger Menu Overlay -->
+    <transition name="menu-overlay">
+      <div
+        v-if="isMenuOpen"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50"
+        @click="closeMenu"
       />
-    </div>
+    </transition>
+
+    <!-- Hamburger Menu Panel (SLIDES FROM LEFT) -->
+    <transition name="menu-slide-left">
+      <div
+        v-if="isMenuOpen"
+        class="fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-50 transform"
+      >
+        <!-- Menu Header -->
+        <div class="flex items-center justify-between p-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">Menu</h2>
+          <button @click="closeMenu" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Menu Items -->
+        <nav class="p-4 space-y-2">
+          <router-link 
+            to="/patient/family" 
+            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
+            @click="closeMenu"
+          >
+            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <span class="text-slate-800">Family Management</span>
+          </router-link>
+
+          <router-link 
+            to="/patient/all-appointments" 
+            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
+            @click="closeMenu"
+          >
+            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span class="text-slate-800">All Appointments</span>
+          </router-link>
+
+          <router-link 
+            to="/patient/profile" 
+            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
+            @click="closeMenu"
+          >
+            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            <span class="text-slate-800">Profile & Settings</span>
+          </router-link>
+
+          <hr class="my-4">
+
+          <button 
+            @click="handleLogout"
+            class="flex items-center space-x-3 p-3 rounded-lg hover:bg-red-50 transition-colors w-full text-left"
+          >
+            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            <span class="text-red-600">Sign Out</span>
+          </button>
+        </nav>
+
+        <!-- Menu Footer -->
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-gray-50">
+          <div class="text-center text-xs text-slate-500">
+            Dental Clinic Management v1.0
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Main Content Area -->
+    <main class="pb-20">
+      <div class="pb-20" :class="{ 'blur-sm': isLoading }">
+        <!-- Route-specific content -->
+        <router-view 
+          :key="$route.fullPath"
+          @loading="handleLoading"
+          @error="handleError"
+        />
+      </div>
+    </main>
 
     <!-- Bottom Navigation Bar -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40" v-if="showBottomNav">
@@ -69,99 +180,6 @@
         </router-link>
       </div>
     </nav>
-
-    <!-- Hamburger Menu -->
-    <div class="fixed top-4 left-4 z-50" v-if="showHamburgerMenu">
-      <button
-        @click="toggleMenu"
-        class="p-3 bg-white rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-      >
-        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
-    </div>
-    <!-- ADD: Patient Info - TOP RIGHT -->
-    <div class="fixed top-4 right-4 z-50" v-if="showHamburgerMenu">
-      <div class="flex items-center space-x-3 bg-white rounded-lg shadow-lg border border-gray-200 px-4 py-3">
-        <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-          <span class="text-primary-600 text-sm font-semibold">{{ userInitials }}</span>
-    </div>
-    <div>
-      <div class="font-medium text-slate-800 text-sm">{{ userName }}</div>
-      <div class="text-xs text-slate-500">{{ userRole }}</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Hamburger Menu Overlay -->
-    <transition name="menu-overlay">
-      <div
-        v-if="isMenuOpen"
-        class="fixed inset-0 bg-black bg-opacity-50 z-50"
-        @click="closeMenu"
-      />
-    </transition>
-
-    <!-- Hamburger Menu Panel -->
-    <transition name="menu-slide-left">
-      <div
-        v-if="isMenuOpen"
-        class="fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-50 transform"
-      >
-        <!-- Menu Header -->
-        <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-              <span class="text-primary-600 text-sm font-semibold">{{ userInitials }}</span>
-            </div>
-            <div>
-              <div class="font-medium text-slate-800">{{ userName }}</div>
-              <div class="text-sm text-slate-500">{{ userRole }}</div>
-            </div>
-          </div>
-          <button @click="closeMenu" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-
-        <!-- Menu Items -->
-        <nav class="p-4 space-y-2">
-          <router-link
-            v-for="item in menuItems"
-            :key="item.route"
-            :to="item.route"
-            class="menu-item"
-            :class="{ 'menu-item-active': $route.path === item.route }"
-            @click="handleMenuNavigation(item)"
-          >
-            <component :is="getIconComponent(item.icon)" class="w-5 h-5" />
-            <div class="flex-1">
-              <div class="font-medium">{{ item.label }}</div>
-              <div class="text-xs text-slate-500">{{ item.description }}</div>
-            </div>
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </router-link>
-        </nav>
-
-        <!-- Menu Footer -->
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-gray-50">
-          <button 
-            @click="handleLogout"
-            class="w-full flex items-center space-x-3 p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-            </svg>
-            <span class="font-medium">Sign Out</span>
-          </button>
-        </div>
-      </div>
-    </transition>
 
     <!-- Floating Chat Button -->
     <button 
@@ -258,36 +276,6 @@ export default {
       return route.name !== 'PatientChat'
     })
 
-    const menuItems = computed(() => {
-      const baseItems = [
-        {
-          label: 'Family Management',
-          route: '/patient/family',
-          icon: 'users',
-          description: 'Manage family members'
-        },
-        {
-          label: 'All Appointments',
-          route: '/patient/all-appointments',
-          icon: 'calendar',
-          description: 'Schedule and view appointments'
-        },
-        {
-          label: 'Profile & Settings',
-          route: '/patient/profile',
-          icon: 'user',
-          description: 'Personal info and preferences'
-        }
-      ]
-
-      // Add family management only if user has permissions
-      if (authStore.canManageFamily()) {
-        return baseItems
-      } else {
-        return baseItems.filter(item => item.route !== '/patient/family')
-      }
-    })
-
     // ===== METHODS =====
     const toggleMenu = () => {
       isMenuOpen.value = !isMenuOpen.value
@@ -304,11 +292,6 @@ export default {
 
     const isActiveRoute = (routePath) => {
       return route.path === routePath
-    }
-
-    const handleMenuNavigation = (item) => {
-      closeMenu()
-      trackNavigation(item.route.split('/').pop(), 'hamburger-menu')
     }
 
     const handleLogout = async () => {
@@ -362,16 +345,6 @@ export default {
 
     const clearSuccess = () => {
       successMessage.value = null
-    }
-
-    const getIconComponent = (iconName) => {
-      // Return icon component name for dynamic components
-      const iconMap = {
-        users: 'UsersIcon',
-        calendar: 'CalendarIcon',
-        user: 'UserIcon'
-      }
-      return iconMap[iconName] || 'div'
     }
 
     // ===== LIFECYCLE HOOKS =====
@@ -436,14 +409,12 @@ export default {
       userInitials,
       showBottomNav,
       showChatButton,
-      menuItems,
       
       // Methods
       toggleMenu,
       closeMenu,
       openChat,
       isActiveRoute,
-      handleMenuNavigation,
       handleLogout,
       trackNavigation,
       handleLoading,
@@ -451,8 +422,7 @@ export default {
       showError,
       showSuccess,
       clearError,
-      clearSuccess,
-      getIconComponent
+      clearSuccess
     }
   }
 }
@@ -481,28 +451,6 @@ export default {
   background-color: #f0fdf4;
 }
 
-/* Menu styles */
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  color: #374151;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-.menu-item:hover {
-  background-color: #f9fafb;
-  transform: translateX(2px);
-}
-
-.menu-item-active {
-  background-color: #eff6ff;
-  color: #0052a3;
-}
-
 /* Transition animations */
 .menu-overlay-enter-active,
 .menu-overlay-leave-active {
@@ -512,27 +460,6 @@ export default {
 .menu-overlay-enter-from,
 .menu-overlay-leave-to {
   opacity: 0;
-}
-
-.menu-slide-enter-active,
-.menu-slide-leave-active {
-  transition: transform 0.3s ease;
-}
-
-.menu-slide-enter-from,
-.menu-slide-leave-to {
-  transform: translateX(100%);
-}
-
-.toast-enter-active,
-.toast-leave-active {
-  transition: all 0.3s ease;
-}
-
-.toast-enter-from,
-.toast-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
 }
 
 .menu-slide-left-enter-active,
@@ -545,6 +472,16 @@ export default {
   transform: translateX(-100%);
 }
 
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.3s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
 
 /* Color classes */
 .bg-primary-50 { background-color: #eff6ff; }
@@ -596,8 +533,7 @@ export default {
 }
 
 /* Accessibility improvements */
-.nav-item:focus,
-.menu-item:focus {
+.nav-item:focus {
   outline: 2px solid #0066CC;
   outline-offset: 2px;
 }
@@ -616,11 +552,6 @@ button:focus {
 @media (max-width: 640px) {
   .w-80 {
     width: 100vw;
-  }
-  
-  .fixed.top-4.right-4 {
-    top: 1rem;
-    right: 1rem;
   }
   
   .fixed.bottom-24.right-4 {
@@ -642,42 +573,6 @@ button:focus {
     right: 1rem;
     left: auto;
     margin: 0;
-  }
-}
-
-@media (max-width: 640px) {
-  .w-80 {
-    width: 100vw;
-  }
-  
-  .fixed.top-4.left-4 {
-    top: 1rem;
-    left: 1rem;
-  }
-  
-  .fixed.top-4.right-4 {
-    top: 1rem;
-    right: 1rem;
-  }
-  
-  /* Hide patient info on mobile to save space */
-  .fixed.top-4.right-4 > div {
-    display: none;
-  }
-  
-  /* Show only avatar on mobile */
-  .fixed.top-4.right-4 {
-    padding: 0;
-  }
-  
-  .fixed.top-4.right-4 .w-10 {
-    margin: 0;
-  }
-}
-
-@media (min-width: 640px) {
-  .fixed.top-4.right-4 > div {
-    display: flex;
   }
 }
 </style>

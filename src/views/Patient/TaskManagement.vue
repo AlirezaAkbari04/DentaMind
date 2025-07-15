@@ -1,118 +1,149 @@
-<!-- Patient Task Management Page -->
 <template>
   <div class="min-h-screen bg-neutral-50 pb-20">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-100 px-4 py-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-xl font-semibold text-slate-800">My Tasks</h1>
-          <p class="text-sm text-slate-600 mt-1">{{ completedCount }}/{{ totalTasks }} completed today</p>
-        </div>
-        <div class="text-right">
-          <div class="text-2xl font-bold text-secondary-600">{{ progressPercentage }}%</div>
-          <div class="text-xs text-slate-500">Progress</div>
-        </div>
-      </div>
-      
-      <!-- Progress Bar -->
-      <div class="mt-4 w-full bg-gray-200 rounded-full h-2">
-        <div 
-          class="bg-secondary-600 h-2 rounded-full transition-all duration-500"
-          :style="{ width: progressPercentage + '%' }"
-        ></div>
-      </div>
-    </header>
+    <!-- Page Header -->
+    <div class="bg-white border-b border-gray-200 px-4 py-6">
+      <h1 class="text-2xl font-bold text-slate-800">My Tasks</h1>
+      <p class="text-slate-600 mt-1">Manage your daily care routine and upcoming activities</p>
+    </div>
 
-    <!-- Main Content -->
-    <main class="px-4 py-6 space-y-6">
-      <!-- Alerts & Notifications Section -->
-      <div v-if="alerts.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center mb-4">
-          <svg class="w-5 h-5 text-accent-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
-          </svg>
-          <h2 class="text-lg font-semibold text-slate-800">Alerts & Notifications</h2>
-        </div>
-        <div class="space-y-3">
-          <div
-            v-for="alert in alerts"
-            :key="alert.id"
-            class="flex items-start space-x-3 p-4 rounded-lg"
-            :class="getAlertClass(alert.priority)"
-          >
-            <svg v-if="alert.priority === 'high'" class="w-5 h-5 text-red-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-            </svg>
-            <svg v-else class="w-5 h-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-            </svg>
-            <div class="flex-1">
-              <div class="font-medium text-slate-800">{{ alert.title }}</div>
-              <div class="text-sm text-slate-600 mt-1">{{ alert.message }}</div>
-              <div class="text-xs text-slate-500 mt-2">{{ formatTimeAgo(alert.createdAt) }}</div>
-            </div>
+    <div class="px-4 py-6 space-y-6">
+      <!-- Today's Tasks - NOW FIRST! -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold text-slate-800">Today's Tasks</h2>
+          <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span class="text-sm text-slate-600">{{ todayProgress }}% Complete</span>
           </div>
         </div>
-      </div>
 
-      <!-- Today's Tasks -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-slate-800">Today's Tasks</h2>
-          <span class="text-sm text-slate-500">{{ todayTasksCompleted }}/{{ todayTasks.length }} completed</span>
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+          <div 
+            class="bg-secondary-500 h-2 rounded-full transition-all duration-300"
+            :style="{ width: todayProgress + '%' }"
+          ></div>
         </div>
-        
+
+        <!-- Task List -->
         <div v-if="todayTasks.length === 0" class="text-center py-8">
-          <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
-          <p class="text-gray-500">No tasks for today</p>
+          <p class="text-gray-500">All tasks completed for today! 🎉</p>
         </div>
 
         <div v-else class="space-y-4">
           <div
             v-for="task in todayTasks"
             :key="task.id"
-            class="border border-gray-100 rounded-lg p-4 hover:shadow-sm transition-shadow"
-            :class="{ 'bg-gray-50 opacity-75': task.completed }"
+            class="border border-gray-100 rounded-lg p-4 transition-all duration-200"
+            :class="task.completed ? 'bg-gray-50 opacity-60' : 'bg-white'"
           >
-            <label class="flex items-start space-x-3 cursor-pointer">
-              <input
-                type="checkbox"
-                v-model="task.completed"
-                @change="updateTask(task)"
-                class="mt-1 h-4 w-4 text-secondary-600 focus:ring-secondary-500 border-gray-300 rounded"
-              />
-              <div class="flex-1">
+            <div class="flex items-start space-x-4">
+              <button 
+                @click="toggleTask(task.id)"
+                class="flex-shrink-0 mt-1"
+              >
                 <div 
-                  class="font-medium text-slate-800"
-                  :class="{ 'line-through text-gray-500': task.completed }"
+                  class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200"
+                  :class="task.completed 
+                    ? 'bg-secondary-500 border-secondary-500' 
+                    : 'border-gray-300 hover:border-secondary-400'"
                 >
-                  {{ task.title }}
+                  <svg v-if="task.completed" class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
                 </div>
-                <div class="text-sm text-slate-600 mt-1">{{ task.description }}</div>
-                <div class="flex items-center space-x-4 mt-3">
-                  <span 
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                    :class="getPriorityClass(task.priority)"
+              </button>
+              
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <h3 
+                    class="font-medium transition-all duration-200"
+                    :class="task.completed ? 'text-gray-500 line-through' : 'text-slate-800'"
                   >
-                    {{ task.priority }}
-                  </span>
-                  <span class="text-xs text-slate-500">{{ task.estimatedTime }}</span>
-                  <span v-if="task.dueTime" class="text-xs text-slate-500">Due: {{ task.dueTime }}</span>
+                    {{ task.title }}
+                  </h3>
+                  <div class="flex items-center space-x-3">
+                    <span class="text-xs text-slate-500">{{ task.dueTime }}</span>
+                    <span 
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      :class="getPriorityClass(task.priority)"
+                    >
+                      {{ task.priority }}
+                    </span>
+                  </div>
+                </div>
+                
+                <p 
+                  class="text-sm mt-1 transition-all duration-200"
+                  :class="task.completed ? 'text-gray-400' : 'text-slate-600'"
+                >
+                  {{ task.description }}
+                </p>
+                
+                <div class="flex items-center space-x-4 mt-3">
+                  <span class="text-xs text-slate-500">⏱️ {{ task.estimatedTime }}</span>
+                  <button 
+                    v-if="!task.completed"
+                    @click="markTaskComplete(task.id)"
+                    class="text-xs text-secondary-600 hover:text-secondary-700 font-medium"
+                  >
+                    Mark Complete
+                  </button>
                 </div>
               </div>
-            </label>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Upcoming Tasks -->
+      <!-- Alerts & Notifications - SECOND -->
+      <div v-if="alerts.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-slate-800">Alerts & Notifications</h2>
+          <span class="bg-red-100 text-red-600 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            {{ alerts.length }}
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <div
+            v-for="alert in alerts"
+            :key="alert.id"
+            class="border-l-4 p-4 rounded-lg"
+            :class="{
+              'border-red-500 bg-red-50': alert.priority === 'high',
+              'border-yellow-500 bg-yellow-50': alert.priority === 'medium',
+              'border-blue-500 bg-blue-50': alert.priority === 'low'
+            }"
+          >
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <h3 class="font-medium text-slate-800">{{ alert.title }}</h3>
+                <p class="text-sm text-slate-600 mt-1">{{ alert.message }}</p>
+                <span class="text-xs text-slate-500 mt-2 block">{{ formatTimeAgo(alert.createdAt) }}</span>
+              </div>
+              <button 
+                @click="dismissAlert(alert.id)"
+                class="text-slate-400 hover:text-slate-600 ml-4"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Tasks - THIRD -->
       <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 class="text-lg font-semibold text-slate-800 mb-4">Upcoming Tasks</h2>
-        
+
         <div v-if="upcomingTasks.length === 0" class="text-center py-8">
-          <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
           <p class="text-gray-500">No upcoming tasks</p>
@@ -146,7 +177,7 @@
         </div>
       </div>
 
-      <!-- Completed Tasks -->
+      <!-- Completed Tasks - LAST -->
       <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-semibold text-slate-800">Recently Completed</h2>
@@ -157,84 +188,37 @@
             {{ showAllCompleted ? 'Show Less' : 'Show All' }}
           </button>
         </div>
-        
+
         <div v-if="completedTasks.length === 0" class="text-center py-8">
-          <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
           <p class="text-gray-500">No completed tasks yet</p>
         </div>
 
-        <div v-else class="space-y-4">
+        <div v-else class="space-y-3">
           <div
             v-for="task in displayedCompletedTasks"
             :key="task.id"
-            class="border border-gray-100 rounded-lg p-4 bg-green-50"
+            class="flex items-center space-x-3 p-3 bg-green-50 rounded-lg border border-green-100"
           >
-            <div class="flex items-start space-x-3">
-              <svg class="w-5 h-5 text-secondary-600 mt-1" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
               </svg>
-              <div class="flex-1">
-                <div class="font-medium text-slate-800 line-through">{{ task.title }}</div>
-                <div class="text-sm text-slate-600 mt-1">{{ task.description }}</div>
-                <div class="text-xs text-slate-500 mt-2">
-                  Completed: {{ formatTimeAgo(task.completedAt) }}
-                </div>
-              </div>
+            </div>
+            <div class="flex-1">
+              <div class="font-medium text-slate-800">{{ task.title }}</div>
+              <div class="text-sm text-slate-600">Completed {{ formatTimeAgo(task.completedAt) }}</div>
             </div>
           </div>
         </div>
       </div>
-    </main>
-
-    <!-- Bottom Navigation (Same as Dashboard) -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2">
-      <div class="flex justify-around items-center">
-        <!-- Task Management -->
-        <router-link to="/patient/tasks" 
-                     class="flex flex-col items-center space-y-1 p-3 rounded-lg transition-colors text-secondary-600 bg-secondary-50">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-          </svg>
-          <span class="text-xs font-medium">Tasks</span>
-        </router-link>
-
-        <!-- Dashboard -->
-        <router-link to="/patient/dashboard" 
-                     class="flex flex-col items-center space-y-1 p-3 rounded-lg transition-colors text-slate-600 hover:text-slate-800">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z M3 7l9 6 9-6"></path>
-          </svg>
-          <span class="text-xs font-medium">Dashboard</span>
-        </router-link>
-
-        <!-- Medical Records -->
-        <router-link to="/patient/medical-records" 
-                     class="flex flex-col items-center space-y-1 p-3 rounded-lg transition-colors text-slate-600 hover:text-slate-800">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-          </svg>
-          <span class="text-xs font-medium">Records</span>
-        </router-link>
-      </div>
-    </nav>
-
-    <!-- Floating Chat Button -->
-    <button 
-      @click="openChat"
-      class="fixed bottom-24 right-4 w-14 h-14 bg-accent-500 hover:bg-accent-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
-    >
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-      </svg>
-    </button>
+    </div>
   </div>
 </template>
 
 <script>
-/* eslint-disable no-unused-vars */
-/* eslint-disable vue/no-unused-vars */
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -284,68 +268,68 @@ export default {
       {
         id: 3,
         title: 'Take Prescribed Medication',
-        description: 'Take antibiotic as prescribed by Dr. Johnson',
+        description: 'Take antibiotic as prescribed by Dr. Smith',
         completed: false,
-        priority: 'medium',
+        priority: 'high',
         estimatedTime: '1 min',
-        dueTime: '12:00 PM'
+        dueTime: '7:00 PM'
       },
       {
         id: 4,
-        title: 'Rinse with Mouthwash',
+        title: 'Mouthwash Rinse',
         description: 'Use antibacterial mouthwash for 30 seconds',
-        completed: true,
-        priority: 'low',
+        completed: false,
+        priority: 'medium',
         estimatedTime: '1 min',
-        dueTime: '10:00 PM'
+        dueTime: '9:15 PM'
       }
     ])
 
     const upcomingTasks = ref([
       {
         id: 5,
-        title: 'Weekly Photo Upload',
-        description: 'Take and upload oral health photos for AI analysis',
-        priority: 'medium',
-        dueDate: new Date('2024-07-08')
+        title: 'Weekly Oral Photo',
+        description: 'Take progress photo of your teeth for Dr. Smith',
+        priority: 'high',
+        dueDate: new Date('2024-07-10T10:00:00')
       },
       {
         id: 6,
-        title: 'Soft Diet Day 2',
-        description: 'Continue soft diet after wisdom tooth extraction',
+        title: 'Dental Cleaning Appointment',
+        description: 'Regular cleaning and checkup with Dr. Smith',
         priority: 'high',
-        dueDate: new Date('2024-07-09')
+        dueDate: new Date('2024-07-15T14:00:00')
       }
     ])
 
     const completedTasks = ref([
       {
         id: 7,
-        title: 'Post-Surgery Care',
-        description: 'Apply ice pack for 15 minutes',
-        completedAt: new Date('2024-07-05T16:30:00')
+        title: 'Morning Brushing',
+        completedAt: new Date('2024-07-08T08:15:00')
       },
       {
         id: 8,
-        title: 'Evening Brushing',
-        description: 'Gentle brushing with soft bristle toothbrush',
-        completedAt: new Date('2024-07-05T21:00:00')
+        title: 'Evening Flossing',
+        completedAt: new Date('2024-07-07T21:30:00')
       },
       {
         id: 9,
-        title: 'Medication Reminder',
-        description: 'Take pain medication as needed',
-        completedAt: new Date('2024-07-05T14:00:00')
+        title: 'Medication Dose',
+        completedAt: new Date('2024-07-07T19:00:00')
+      },
+      {
+        id: 10,
+        title: 'Mouthwash Rinse',
+        completedAt: new Date('2024-07-07T21:45:00')
       }
     ])
 
-    // Computed properties
-    const totalTasks = computed(() => todayTasks.value.length)
-    const completedCount = computed(() => todayTasks.value.filter(task => task.completed).length)
-    const todayTasksCompleted = computed(() => todayTasks.value.filter(task => task.completed).length)
-    const progressPercentage = computed(() => {
-      if (totalTasks.value === 0) return 0
-      return Math.round((completedCount.value / totalTasks.value) * 100)
+    // Computed
+    const todayProgress = computed(() => {
+      if (todayTasks.value.length === 0) return 100
+      const completed = todayTasks.value.filter(task => task.completed).length
+      return Math.round((completed / todayTasks.value.length) * 100)
     })
 
     const displayedCompletedTasks = computed(() => {
@@ -353,88 +337,87 @@ export default {
     })
 
     // Methods
-    const updateTask = (task) => {
-      // TODO: Send API request to update task completion status
-      console.log('Updating task:', task.id, 'completed:', task.completed)
-      
-      // Simulate API call
-      if (task.completed) {
-        task.completedAt = new Date()
+    const toggleTask = (taskId) => {
+      const task = todayTasks.value.find(t => t.id === taskId)
+      if (task) {
+        task.completed = !task.completed
+        if (task.completed) {
+          // Move to completed tasks
+          completedTasks.value.unshift({
+            id: task.id,
+            title: task.title,
+            completedAt: new Date()
+          })
+        }
+      }
+    }
+
+    const markTaskComplete = (taskId) => {
+      toggleTask(taskId)
+    }
+
+    const dismissAlert = (alertId) => {
+      const index = alerts.value.findIndex(alert => alert.id === alertId)
+      if (index > -1) {
+        alerts.value.splice(index, 1)
       }
     }
 
     const getPriorityClass = (priority) => {
       switch (priority) {
         case 'high':
-          return 'bg-red-100 text-red-800'
+          return 'bg-red-100 text-red-700'
         case 'medium':
-          return 'bg-yellow-100 text-yellow-800'
+          return 'bg-yellow-100 text-yellow-700'
         case 'low':
-          return 'bg-green-100 text-green-800'
+          return 'bg-green-100 text-green-700'
         default:
-          return 'bg-gray-100 text-gray-800'
-      }
-    }
-
-    const getAlertClass = (priority) => {
-      switch (priority) {
-        case 'high':
-          return 'bg-red-50 border-l-4 border-red-400'
-        case 'medium':
-          return 'bg-yellow-50 border-l-4 border-yellow-400'
-        case 'low':
-          return 'bg-blue-50 border-l-4 border-blue-400'
-        default:
-          return 'bg-gray-50 border-l-4 border-gray-400'
+          return 'bg-gray-100 text-gray-700'
       }
     }
 
     const formatDate = (date) => {
-      return date.toLocaleDateString('en-US', { 
-        month: 'short', 
+      return new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        month: 'short',
         day: 'numeric',
-        year: 'numeric'
-      })
+        hour: 'numeric',
+        minute: '2-digit'
+      }).format(date)
     }
 
     const formatTimeAgo = (date) => {
       const now = new Date()
-      const diffInHours = Math.floor((now - date) / (1000 * 60 * 60))
-      
-      if (diffInHours < 1) {
-        return 'Just now'
-      } else if (diffInHours < 24) {
-        return `${diffInHours}h ago`
+      const diffMs = now - date
+      const diffMins = Math.floor(diffMs / 60000)
+      const diffHours = Math.floor(diffMins / 60)
+      const diffDays = Math.floor(diffHours / 24)
+
+      if (diffMins < 60) {
+        return `${diffMins} minutes ago`
+      } else if (diffHours < 24) {
+        return `${diffHours} hours ago`
       } else {
-        const diffInDays = Math.floor(diffInHours / 24)
-        return `${diffInDays}d ago`
+        return `${diffDays} days ago`
       }
     }
 
     const openChat = () => {
-      // TODO: Implement chat opening logic
-      console.log('Opening chat...')
+      router.push('/patient/chat')
     }
 
-    onMounted(() => {
-      // TODO: Fetch tasks from API
-      console.log('Fetching patient tasks...')
-    })
-
     return {
+      showAllCompleted,
       alerts,
       todayTasks,
       upcomingTasks,
       completedTasks,
-      showAllCompleted,
-      totalTasks,
-      completedCount,
-      todayTasksCompleted,
-      progressPercentage,
+      todayProgress,
       displayedCompletedTasks,
-      updateTask,
+      toggleTask,
+      markTaskComplete,
+      dismissAlert,
       getPriorityClass,
-      getAlertClass,
       formatDate,
       formatTimeAgo,
       openChat

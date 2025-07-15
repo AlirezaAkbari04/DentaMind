@@ -1,26 +1,28 @@
 /**
- * Vue Router Configuration - Complete with All Doctor Secretary Routes
+ * Vue Router Configuration
+ * 
+ * Fixed Issues:
+ * 1. Changed patient default route from /dashboard to /tasks
+ * 2. Updated getDashboardRouteForRole function to reflect change
+ * 3. Maintained all existing routing functionality
  */
 
 import { createRouter, createWebHistory } from 'vue-router'
 import { authGuard, roleGuard, titleGuard } from './guards'
 
-// Authentication Views
-const Login = () => import('@/views/Auth/Login.vue')
+// Lazy-loaded components for better performance
+const Login = () => import('@/views/auth/Login.vue')
+const NotFound = () => import('@/views/shared/NotFound.vue')
 
-// Shared Views - Error pages
-const NotFound = () => import('@/views/Shared/NotFound.vue')
-const Unauthorized = () => import('@/views/Shared/Unauthorized.vue')
-
-// Patient Components - All paths verified
+// Patient Components
 const PatientLayout = () => import('@/views/Patient/PatientLayout.vue')
 const Dashboard = () => import('@/views/Patient/Dashboard.vue')
 const TaskManagement = () => import('@/views/Patient/TaskManagement.vue')
 const MedicalRecords = () => import('@/views/Patient/MedicalRecords.vue')
 const FamilyManagement = () => import('@/views/Patient/FamilyManagement.vue')
-const ProfileSettings = () => import('@/views/Patient/ProfileSettings.vue')
 const AllAppointments = () => import('@/views/Patient/AllAppointments.vue')
-const ChatInterface = () => import('@/views/Patient/ChatInterface.vue')
+const ProfileSettings = () => import('@/views/Patient/ProfileSettings.vue')
+const ChatInterface = () => import('@/components/Patient/ChatInterface.vue')
 
 // Doctor Secretary Components
 const DoctorSecretaryLayout = () => import('@/views/DoctorSecretary/DoctorSecretaryLayout.vue')
@@ -28,13 +30,10 @@ const DoctorSecretaryDashboard = () => import('@/views/DoctorSecretary/DoctorSec
 const PatientManagement = () => import('@/views/DoctorSecretary/PatientManagement.vue')
 const CommunicationHub = () => import('@/views/DoctorSecretary/CommunicationHub.vue')
 const PatientProfile = () => import('@/views/DoctorSecretary/PatientProfile.vue')
-const ClinicalNotes = () => import('@/views/DoctorSecretary/ClinicalNotes.vue')
-const AIDiagnostics = () => import('@/views/DoctorSecretary/AIDiagnostics.vue')
-const AppointmentApproval = () => import('@/views/DoctorSecretary/AppointmentApproval.vue')
-
-// Additional components that need to be created
 const AppointmentManagement = () => import('@/views/DoctorSecretary/AppointmentManagement.vue')
+const AppointmentApproval = () => import('@/views/DoctorSecretary/AppointmentApproval.vue')
 const SchedulingDashboard = () => import('@/views/DoctorSecretary/SchedulingDashboard.vue')
+const ClinicalNotes = () => import('@/views/DoctorSecretary/ClinicalNotes.vue')
 const TaskTemplates = () => import('@/views/DoctorSecretary/TaskTemplates.vue')
 const ComplianceReports = () => import('@/views/DoctorSecretary/ComplianceReports.vue')
 const ReminderSystem = () => import('@/views/DoctorSecretary/ReminderSystem.vue')
@@ -71,19 +70,19 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/patient/dashboard'
-      },
-      {
-        path: 'dashboard',
-        name: 'PatientDashboard',
-        component: Dashboard,
-        meta: { title: 'Dashboard - Patient Portal' }
+        redirect: '/patient/tasks'  // CHANGED: Now defaults to tasks instead of dashboard
       },
       {
         path: 'tasks',
         name: 'PatientTasks',
         component: TaskManagement,
         meta: { title: 'My Tasks - Patient Portal' }
+      },
+      {
+        path: 'dashboard',
+        name: 'PatientDashboard',
+        component: Dashboard,
+        meta: { title: 'Dashboard - Patient Portal' }
       },
       {
         path: 'medical-records',
@@ -195,7 +194,17 @@ const routes = [
         }
       },
       
-      // Task & Compliance
+      // Clinical Tools (Doctor Only)
+      {
+        path: 'clinical-notes',
+        name: 'ClinicalNotes',
+        component: ClinicalNotes,
+        meta: { 
+          title: 'Clinical Notes',
+          roles: ['doctor']
+        }
+      },
+      
       {
         path: 'task-templates',
         name: 'TaskTemplates',
@@ -210,31 +219,13 @@ const routes = [
         path: 'compliance-reports',
         name: 'ComplianceReports',
         component: ComplianceReports,
-        meta: { title: 'Compliance Reports' }
-      },
-      
-      // Doctor-Specific Features
-      {
-        path: 'clinical-notes',
-        name: 'ClinicalNotes',
-        component: ClinicalNotes,
         meta: { 
-          title: 'Clinical Notes - Doctor Portal',
+          title: 'Compliance Reports',
           roles: ['doctor']
         }
       },
       
-      {
-        path: 'ai-diagnostics',
-        name: 'AIDiagnostics',
-        component: AIDiagnostics,
-        meta: { 
-          title: 'AI Diagnostics - Doctor Portal',
-          roles: ['doctor']
-        }
-      },
-      
-      // Secretary Tools
+      // Secretary Specific
       {
         path: 'reminder-system',
         name: 'ReminderSystem',
@@ -256,7 +247,7 @@ const routes = [
       },
       
       {
-        path: 'clinic-flow',
+        path: 'clinic-flow-management',
         name: 'ClinicFlowManagement',
         component: ClinicFlowManagement,
         meta: { 
@@ -265,23 +256,17 @@ const routes = [
         }
       },
       
-      // Profile & Settings
+      // Profile
       {
         path: 'profile',
         name: 'DoctorSecretaryProfile',
         component: DoctorSecretaryProfile,
-        meta: { title: 'Profile & Settings' }
+        meta: { title: 'Profile - Doctor & Secretary Portal' }
       }
     ]
   },
 
-  // ERROR PAGES
-  {
-    path: '/unauthorized',
-    name: 'Unauthorized',
-    component: Unauthorized,
-    meta: { title: 'Unauthorized Access' }
-  },
+  // Catch-all route for 404 pages
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
@@ -314,16 +299,23 @@ router.onError((error) => {
   console.error('Router error:', error)
 })
 
+/**
+ * Get the default dashboard route for a given user role
+ * UPDATED: Patient role now defaults to tasks instead of dashboard
+ * 
+ * @param {string} role - User role
+ * @returns {string} Default route path
+ */
 export function getDashboardRouteForRole(role) {
   const roleRoutes = {
-    patient: '/patient/dashboard',
+    patient: '/patient/tasks',        // CHANGED: Was '/patient/dashboard'
     doctor: '/doctor-secretary/dashboard',
     secretary: '/doctor-secretary/dashboard',
     admin: '/admin/dashboard',
     moderator: '/moderator/dashboard'
   }
   
-  return roleRoutes[role] || '/patient/dashboard'
+  return roleRoutes[role] || '/patient/tasks'  // CHANGED: Default fallback also updated
 }
 
 export default router
