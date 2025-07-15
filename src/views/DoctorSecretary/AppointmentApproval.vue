@@ -1,5 +1,4 @@
-<!--
-  Appointment Approval Component (Secretary Only)
+  Appointment Approval Component (Secretary Only) - Responsive Fixed
   
   Professional appointment management system with:
   - Pending appointment requests with patient details
@@ -8,20 +7,21 @@
   - Advanced filtering and search capabilities
   - Conflict detection and scheduling optimization
   - Automated notifications to patients and doctors
+  - Full responsive design for all screen sizes
 -->
 <template>
-  <div class="p-4 space-y-6">
+  <div class="p-3 sm:p-4 space-y-4 sm:space-y-6">
     <!-- Header -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 class="text-2xl font-bold text-slate-800">Appointment Approval</h1>
-          <p class="text-slate-600">Review and manage patient appointment requests</p>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+      <div class="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex-1 min-w-0">
+          <h1 class="text-xl sm:text-2xl font-bold text-slate-800 truncate">Appointment Approval</h1>
+          <p class="text-sm sm:text-base text-slate-600 mt-1">Review and manage patient appointment requests</p>
         </div>
         
-        <div class="flex items-center space-x-3">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 flex-shrink-0">
           <!-- Status Summary -->
-          <div class="flex items-center space-x-4 text-sm">
+          <div class="flex items-center justify-center sm:justify-start space-x-3 sm:space-x-4 text-xs sm:text-sm">
             <div class="flex items-center space-x-1">
               <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
               <span class="text-slate-600">{{ pendingCount }} Pending</span>
@@ -33,34 +33,38 @@
           </div>
           
           <!-- Quick Actions -->
-          <button 
-            @click="showBulkActions = !showBulkActions"
-            class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-          >
-            Bulk Actions
-          </button>
-          
-          <button 
-            @click="refreshAppointments"
-            class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
-          >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Refresh
-          </button>
+          <div class="flex items-center space-x-2 sm:space-x-3">
+            <button 
+              @click="showBulkActions = !showBulkActions"
+              class="flex-1 sm:flex-none bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors"
+            >
+              <span class="sm:hidden">Bulk</span>
+              <span class="hidden sm:inline">Bulk Actions</span>
+            </button>
+            
+            <button 
+              @click="refreshAppointments"
+              class="flex-1 sm:flex-none bg-primary-600 hover:bg-primary-700 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center justify-center"
+            >
+              <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span class="sm:hidden">Refresh</span>
+              <span class="hidden sm:inline">Refresh</span>
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Filters and Search -->
-      <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <!-- Search -->
         <div class="relative">
           <input 
             v-model="searchQuery"
             type="text"
             placeholder="Search by patient name..."
-            class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
           />
           <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -70,7 +74,7 @@
         <!-- Status Filter -->
         <select 
           v-model="statusFilter"
-          class="border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          class="border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
         >
           <option value="">All Statuses</option>
           <option value="pending">Pending</option>
@@ -81,7 +85,7 @@
         <!-- Priority Filter -->
         <select 
           v-model="priorityFilter"
-          class="border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          class="border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
         >
           <option value="">All Priorities</option>
           <option value="urgent">Urgent</option>
@@ -93,7 +97,7 @@
         <!-- Date Filter -->
         <select 
           v-model="dateFilter"
-          class="border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          class="border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
         >
           <option value="">All Dates</option>
           <option value="today">Today</option>
@@ -104,8 +108,8 @@
       </div>
 
       <!-- Bulk Actions Panel -->
-      <div v-if="showBulkActions" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-        <div class="flex items-center justify-between">
+      <div v-if="showBulkActions" class="mt-4 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
           <div class="flex items-center space-x-4">
             <label class="flex items-center">
               <input 
@@ -120,18 +124,18 @@
             </label>
           </div>
           
-          <div class="flex items-center space-x-2">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
             <button 
               @click="bulkApprove"
               :disabled="selectedAppointments.length === 0"
-              class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Approve Selected
             </button>
             <button 
               @click="bulkReject"
               :disabled="selectedAppointments.length === 0"
-              class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Reject Selected
             </button>
@@ -142,7 +146,7 @@
 
     <!-- Appointments List -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-      <div class="p-6 border-b border-gray-200">
+      <div class="p-4 sm:p-6 border-b border-gray-200">
         <h2 class="text-lg font-semibold text-slate-800">
           Appointment Requests ({{ filteredAppointments.length }})
         </h2>
@@ -152,9 +156,9 @@
         <div
           v-for="appointment in paginatedAppointments"
           :key="appointment.id"
-          class="p-6 hover:bg-gray-50 transition-colors"
+          class="p-4 sm:p-6 hover:bg-gray-50 transition-colors"
         >
-          <div class="flex items-start space-x-4">
+          <div class="flex items-start space-x-3 sm:space-x-4">
             <!-- Selection Checkbox -->
             <div v-if="showBulkActions" class="flex-shrink-0 pt-1">
               <input 
@@ -167,8 +171,8 @@
 
             <!-- Patient Avatar -->
             <div class="flex-shrink-0">
-              <div class="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center">
-                <span class="text-sm font-medium text-slate-600">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-slate-200 rounded-full flex items-center justify-center">
+                <span class="text-xs sm:text-sm font-medium text-slate-600">
                   {{ appointment.patientName.split(' ').map(n => n[0]).join('') }}
                 </span>
               </div>
@@ -176,125 +180,185 @@
 
             <!-- Appointment Details -->
             <div class="flex-1 min-w-0">
-              <div class="flex items-start justify-between">
-                <div class="flex-1">
-                  <!-- Patient Info -->
-                  <div class="flex items-center space-x-3 mb-2">
-                    <h3 class="text-lg font-semibold text-slate-800">{{ appointment.patientName }}</h3>
-                    <span 
-                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                      :class="getPriorityClasses(appointment.priority)"
-                    >
-                      {{ appointment.priority }} Priority
-                    </span>
-                    <span 
-                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                      :class="getStatusClasses(appointment.status)"
-                    >
-                      {{ appointment.status }}
-                    </span>
-                  </div>
-
-                  <!-- Appointment Details -->
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-3">
-                    <div class="flex items-center space-x-2">
-                      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10a1 1 0 001 1h6a1 1 0 001-1V11a1 1 0 00-1-1H9a1 1 0 00-1 1z" />
-                      </svg>
-                      <span class="text-sm text-slate-600">{{ formatDateTime(appointment.requestedDate, appointment.requestedTime) }}</span>
+              <div class="flex flex-col space-y-3">
+                <!-- Patient Info and Status -->
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
+                      <h3 class="text-base sm:text-lg font-semibold text-slate-800 truncate">{{ appointment.patientName }}</h3>
+                      <div class="flex items-center space-x-2">
+                        <span 
+                          class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                          :class="getPriorityClasses(appointment.priority)"
+                        >
+                          {{ appointment.priority }} Priority
+                        </span>
+                        <span 
+                          class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                          :class="getStatusClasses(appointment.status)"
+                        >
+                          {{ appointment.status }}
+                        </span>
+                      </div>
                     </div>
 
-                    <div class="flex items-center space-x-2">
-                      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 7.172V5L8 4z" />
-                      </svg>
-                      <span class="text-sm text-slate-600">{{ appointment.treatmentType }}</span>
+                    <!-- Appointment Details Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 mb-3">
+                      <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10a1 1 0 001 1h6a1 1 0 001-1V11a1 1 0 00-1-1H9a1 1 0 00-1 1z" />
+                        </svg>
+                        <span class="text-xs sm:text-sm text-slate-600 truncate">{{ formatDateTime(appointment.requestedDate, appointment.requestedTime) }}</span>
+                      </div>
+
+                      <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 7.172V5L8 4z" />
+                        </svg>
+                        <span class="text-xs sm:text-sm text-slate-600 truncate">{{ appointment.treatmentType }}</span>
+                      </div>
+
+                      <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-xs sm:text-sm text-slate-600">{{ appointment.estimatedDuration }} min</span>
+                      </div>
                     </div>
 
-                    <div class="flex items-center space-x-2">
-                      <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span class="text-sm text-slate-600">{{ appointment.estimatedDuration }} min</span>
+                    <!-- Reason/Notes -->
+                    <div v-if="appointment.reason" class="mb-3">
+                      <p class="text-xs sm:text-sm text-slate-600">
+                        <span class="font-medium">Reason:</span> {{ appointment.reason }}
+                      </p>
                     </div>
-                  </div>
 
-                  <!-- Reason/Notes -->
-                  <div v-if="appointment.reason" class="mb-3">
-                    <p class="text-sm text-slate-600">
-                      <span class="font-medium">Reason:</span> {{ appointment.reason }}
-                    </p>
-                  </div>
+                    <!-- Patient Contact -->
+                    <div class="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 text-xs sm:text-sm text-slate-500">
+                      <span class="truncate">{{ appointment.patientPhone }}</span>
+                      <span class="truncate">{{ appointment.patientEmail }}</span>
+                      <span class="flex-shrink-0">Requested {{ formatTimeAgo(appointment.createdAt) }}</span>
+                    </div>
 
-                  <!-- Patient Contact -->
-                  <div class="flex items-center space-x-4 text-sm text-slate-500">
-                    <span>{{ appointment.patientPhone }}</span>
-                    <span>{{ appointment.patientEmail }}</span>
-                    <span>Requested {{ formatTimeAgo(appointment.createdAt) }}</span>
-                  </div>
-
-                  <!-- Conflict Warning -->
-                  <div v-if="appointment.hasConflict" class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <div class="flex items-start space-x-2">
-                      <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                      </svg>
-                      <div>
-                        <p class="text-sm font-medium text-yellow-800">Scheduling Conflict</p>
-                        <p class="text-sm text-yellow-700">{{ appointment.conflictMessage }}</p>
+                    <!-- Conflict Warning -->
+                    <div v-if="appointment.hasConflict" class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div class="flex items-start space-x-2">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        <div class="flex-1 min-w-0">
+                          <p class="text-xs sm:text-sm font-medium text-yellow-800">Scheduling Conflict</p>
+                          <p class="text-xs sm:text-sm text-yellow-700">{{ appointment.conflictMessage }}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <!-- Action Buttons -->
-                <div class="flex items-center space-x-2 ml-4">
-                  <button 
-                    v-if="appointment.status === 'pending'"
-                    @click="viewPatientHistory(appointment.patientId)"
-                    class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-100 transition-colors"
-                    title="View Patient History"
-                  >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </button>
+                  <!-- Action Buttons -->
+                  <div class="flex sm:flex-col lg:flex-row items-stretch sm:items-end lg:items-center space-x-2 sm:space-x-0 sm:space-y-2 lg:space-y-0 lg:space-x-2 flex-shrink-0">
+                    <!-- Action Icons for Mobile/Tablet -->
+                    <div class="flex sm:hidden items-center space-x-2">
+                      <button 
+                        v-if="appointment.status === 'pending'"
+                        @click="viewPatientHistory(appointment.patientId)"
+                        class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-100 transition-colors"
+                        title="View Patient History"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </button>
 
-                  <button 
-                    v-if="appointment.status === 'pending'"
-                    @click="rescheduleAppointment(appointment)"
-                    class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-100 transition-colors"
-                    title="Suggest Alternative Time"
-                  >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10a1 1 0 001 1h6a1 1 0 001-1V11a1 1 0 00-1-1H9a1 1 0 00-1 1z" />
-                    </svg>
-                  </button>
+                      <button 
+                        v-if="appointment.status === 'pending'"
+                        @click="rescheduleAppointment(appointment)"
+                        class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-100 transition-colors"
+                        title="Suggest Alternative Time"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10a1 1 0 001 1h6a1 1 0 001-1V11a1 1 0 00-1-1H9a1 1 0 00-1 1z" />
+                        </svg>
+                      </button>
+                    </div>
 
-                  <button 
-                    v-if="appointment.status === 'pending'"
-                    @click="rejectAppointment(appointment)"
-                    class="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
-                  >
-                    Reject
-                  </button>
+                    <!-- Desktop Action Icons -->
+                    <div class="hidden sm:flex lg:hidden flex-col space-y-2">
+                      <button 
+                        v-if="appointment.status === 'pending'"
+                        @click="viewPatientHistory(appointment.patientId)"
+                        class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-100 transition-colors"
+                        title="View Patient History"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </button>
 
-                  <button 
-                    v-if="appointment.status === 'pending'"
-                    @click="approveAppointment(appointment)"
-                    class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
-                  >
-                    Approve
-                  </button>
+                      <button 
+                        v-if="appointment.status === 'pending'"
+                        @click="rescheduleAppointment(appointment)"
+                        class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-100 transition-colors"
+                        title="Suggest Alternative Time"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10a1 1 0 001 1h6a1 1 0 001-1V11a1 1 0 00-1-1H9a1 1 0 00-1 1z" />
+                        </svg>
+                      </button>
+                    </div>
 
-                  <!-- Status Display for non-pending -->
-                  <div v-else class="text-sm">
-                    <span v-if="appointment.status === 'approved'" class="text-green-600 font-medium">
-                      ✓ Approved {{ formatTimeAgo(appointment.updatedAt) }}
-                    </span>
-                    <span v-else-if="appointment.status === 'rejected'" class="text-red-600 font-medium">
-                      ✗ Rejected {{ formatTimeAgo(appointment.updatedAt) }}
-                    </span>
+                    <!-- Large Desktop Action Icons -->
+                    <div class="hidden lg:flex items-center space-x-2">
+                      <button 
+                        v-if="appointment.status === 'pending'"
+                        @click="viewPatientHistory(appointment.patientId)"
+                        class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-100 transition-colors"
+                        title="View Patient History"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </button>
+
+                      <button 
+                        v-if="appointment.status === 'pending'"
+                        @click="rescheduleAppointment(appointment)"
+                        class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-gray-100 transition-colors"
+                        title="Suggest Alternative Time"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10a1 1 0 001 1h6a1 1 0 001-1V11a1 1 0 00-1-1H9a1 1 0 00-1 1z" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-0 lg:space-y-2 xl:space-y-0 xl:space-x-2">
+                      <button 
+                        v-if="appointment.status === 'pending'"
+                        @click="rejectAppointment(appointment)"
+                        class="px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-xs sm:text-sm font-medium"
+                      >
+                        Reject
+                      </button>
+
+                      <button 
+                        v-if="appointment.status === 'pending'"
+                        @click="approveAppointment(appointment)"
+                        class="px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs sm:text-sm font-medium"
+                      >
+                        Approve
+                      </button>
+
+                      <!-- Status Display for non-pending -->
+                      <div v-else class="text-xs sm:text-sm">
+                        <span v-if="appointment.status === 'approved'" class="text-green-600 font-medium">
+                          ✓ Approved {{ formatTimeAgo(appointment.updatedAt) }}
+                        </span>
+                        <span v-else-if="appointment.status === 'rejected'" class="text-red-600 font-medium">
+                          ✗ Rejected {{ formatTimeAgo(appointment.updatedAt) }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -303,39 +367,39 @@
         </div>
 
         <!-- Empty State -->
-        <div v-if="filteredAppointments.length === 0" class="p-12 text-center">
-          <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div v-if="filteredAppointments.length === 0" class="p-8 sm:p-12 text-center">
+          <svg class="w-12 h-12 sm:w-16 sm:h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10a1 1 0 001 1h6a1 1 0 001-1V11a1 1 0 00-1-1H9a1 1 0 00-1 1z" />
           </svg>
-          <h3 class="text-lg font-medium text-slate-800 mb-2">No Appointment Requests</h3>
-          <p class="text-slate-600">No appointments match your current filters.</p>
+          <h3 class="text-base sm:text-lg font-medium text-slate-800 mb-2">No Appointment Requests</h3>
+          <p class="text-sm sm:text-base text-slate-600">No appointments match your current filters.</p>
         </div>
       </div>
 
       <!-- Pagination -->
-      <div v-if="filteredAppointments.length > itemsPerPage" class="p-6 border-t border-gray-200">
-        <div class="flex items-center justify-between">
-          <div class="text-sm text-slate-600">
+      <div v-if="filteredAppointments.length > itemsPerPage" class="p-4 sm:p-6 border-t border-gray-200">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+          <div class="text-xs sm:text-sm text-slate-600 text-center sm:text-left">
             Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, filteredAppointments.length) }} of {{ filteredAppointments.length }} appointments
           </div>
           
-          <div class="flex items-center space-x-2">
+          <div class="flex items-center justify-center space-x-2">
             <button 
               @click="currentPage = Math.max(1, currentPage - 1)"
               :disabled="currentPage === 1"
-              class="px-3 py-1 text-sm text-slate-600 border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-2 text-xs sm:text-sm text-slate-600 border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>
             
-            <span class="px-3 py-1 text-sm text-slate-600">
+            <span class="px-3 py-2 text-xs sm:text-sm text-slate-600">
               Page {{ currentPage }} of {{ totalPages }}
             </span>
             
             <button 
               @click="currentPage = Math.min(totalPages, currentPage + 1)"
               :disabled="currentPage === totalPages"
-              class="px-3 py-1 text-sm text-slate-600 border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-2 text-xs sm:text-sm text-slate-600 border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
             </button>
@@ -345,14 +409,14 @@
     </div>
 
     <!-- Reschedule Modal -->
-    <div v-if="showRescheduleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click="closeRescheduleModal">
-      <div @click.stop class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
-        <div class="p-6 border-b border-gray-200">
+    <div v-if="showRescheduleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click="closeRescheduleModal">
+      <div @click.stop class="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div class="p-4 sm:p-6 border-b border-gray-200">
           <h3 class="text-lg font-semibold text-slate-800">Suggest Alternative Time</h3>
           <p class="text-sm text-slate-600 mt-1">Patient: {{ selectedAppointment?.patientName }}</p>
         </div>
         
-        <div class="p-6 space-y-4">
+        <div class="p-4 sm:p-6 space-y-4">
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">Alternative Date</label>
             <input 
@@ -388,8 +452,7 @@
             ></textarea>
           </div>
         </div>
-        
-        <div class="p-6 border-t border-gray-200 flex items-center justify-end space-x-3">
+        <div class="p-4 sm:p-6 border-t border-gray-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-end space-y-3 sm:space-y-0 sm:space-x-3">
           <button 
             @click="closeRescheduleModal"
             class="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors"
@@ -912,6 +975,68 @@ export default {
 .focus\:ring-primary-500:focus { box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1); }
 .focus\:border-primary-500:focus { border-color: #0066CC; }
 
+/* Responsive Grid Fixes */
+@media (max-width: 640px) {
+  .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .sm\:grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .lg\:grid-cols-3 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .lg\:grid-cols-4 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  
+  /* Mobile Touch Targets */
+  button {
+    min-height: 44px;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  input, select, textarea {
+    min-height: 44px;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  /* Better spacing on mobile */
+  .space-y-3 > * + * { margin-top: 0.75rem; }
+  .space-y-4 > * + * { margin-top: 1rem; }
+  .space-x-2 > * + * { margin-left: 0.5rem; }
+  .space-x-3 > * + * { margin-left: 0.75rem; }
+  
+  /* Mobile text adjustments */
+  .text-xs { font-size: 0.7rem; }
+  .text-sm { font-size: 0.8rem; }
+}
+
+@media (min-width: 640px) {
+  .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Flex Layout Improvements */
+.flex { display: flex; }
+.flex-1 { flex: 1 1 0%; }
+.flex-shrink-0 { flex-shrink: 0; }
+.min-w-0 { min-width: 0px; }
+.items-start { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+
+/* Flex Direction */
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+
+/* Text Truncation */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Hover effects */
 .hover\:bg-gray-50:hover { background-color: #f9fafb; }
 .hover\:bg-gray-100:hover { background-color: #f3f4f6; }
@@ -935,36 +1060,28 @@ export default {
 .disabled\:opacity-50:disabled { opacity: 0.5; }
 .disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
 
-/* Grid responsive */
-.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
-@media (min-width: 768px) {
-  .md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .md\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-
-@media (min-width: 1024px) {
-  .lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
-
-/* Modal backdrop */
+/* Modal Responsiveness */
 .fixed { position: fixed; }
 .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
 .z-50 { z-index: 50; }
 
-/* Flex utilities */
+@media (max-width: 640px) {
+  .max-h-\[90vh\] { max-height: calc(100vh - 2rem); }
+}
+
+/* Spacing Utilities */
 .space-x-2 > * + * { margin-left: 0.5rem; }
 .space-x-3 > * + * { margin-left: 0.75rem; }
 .space-x-4 > * + * { margin-left: 1rem; }
+.space-y-2 > * + * { margin-top: 0.5rem; }
 .space-y-3 > * + * { margin-top: 0.75rem; }
 .space-y-4 > * + * { margin-top: 1rem; }
 .space-y-6 > * + * { margin-top: 1.5rem; }
 
-/* Text utilities */
+/* Text Sizes */
 .text-xs { font-size: 0.75rem; line-height: 1rem; }
 .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.text-base { font-size: 1rem; line-height: 1.5rem; }
 .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
 .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
 .text-2xl { font-size: 1.5rem; line-height: 2rem; }
@@ -974,114 +1091,25 @@ export default {
 .font-semibold { font-weight: 600; }
 .font-bold { font-weight: 700; }
 
-/* Spacing */
-.p-1 { padding: 0.25rem; }
-.p-2 { padding: 0.5rem; }
-.p-3 { padding: 0.75rem; }
-.p-4 { padding: 1rem; }
-.p-6 { padding: 1.5rem; }
-.p-12 { padding: 3rem; }
-
-.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
-.px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
-.px-4 { padding-left: 1rem; padding-right: 1rem; }
-.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
-.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 0.75rem; }
-.mb-4 { margin-bottom: 1rem; }
-.mb-6 { margin-bottom: 1.5rem; }
-.mt-1 { margin-top: 0.25rem; }
-.mt-3 { margin-top: 0.75rem; }
-.mt-4 { margin-top: 1rem; }
-.mt-6 { margin-top: 1.5rem; }
-.ml-2 { margin-left: 0.5rem; }
-.ml-4 { margin-left: 1rem; }
-
-/* Border radius */
-.rounded { border-radius: 0.25rem; }
-.rounded-lg { border-radius: 0.5rem; }
-.rounded-xl { border-radius: 0.75rem; }
-.rounded-full { border-radius: 9999px; }
-
-/* Shadows */
-.shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
-.shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-.shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
-
-/* Borders */
-.border { border-width: 1px; }
-.border-t { border-top-width: 1px; }
-.border-b { border-bottom-width: 1px; }
-.border-gray-100 { border-color: #f3f4f6; }
-.border-gray-200 { border-color: #e5e7eb; }
-.border-yellow-200 { border-color: #fde047; }
-
-/* Divide utilities */
-.divide-y > * + * { border-top-width: 1px; }
-.divide-gray-200 > * + * { border-color: #e5e7eb; }
-
-/* Width and height */
-.w-3 { width: 0.75rem; }
-.w-4 { width: 1rem; }
-.w-5 { width: 1.25rem; }
-.w-12 { width: 3rem; }
-.w-16 { width: 4rem; }
-.w-full { width: 100%; }
-.h-3 { height: 0.75rem; }
-.h-4 { height: 1rem; }
-.h-5 { height: 1.25rem; }
-.h-12 { height: 3rem; }
-.h-16 { height: 4rem; }
-
-/* Min width */
-.min-w-0 { min-width: 0px; }
-
-/* Flex */
-.flex { display: flex; }
-.flex-1 { flex: 1 1 0%; }
-.flex-shrink-0 { flex-shrink: 0; }
-.items-start { align-items: flex-start; }
-.items-center { align-items: center; }
-.items-end { align-items: flex-end; }
-.justify-between { justify-content: space-between; }
-.justify-end { justify-content: flex-end; }
-
-/* Display */
-.block { display: block; }
-.inline-flex { display: inline-flex; }
-
-/* Text alignment */
-.text-center { text-align: center; }
-
-/* Cursor */
-.cursor-pointer { cursor: pointer; }
-
-/* Overflow */
-.overflow-hidden { overflow: hidden; }
-
-/* Positioning */
-.relative { position: relative; }
-.absolute { position: absolute; }
-.top-2\.5 { top: 0.625rem; }
-.left-3 { left: 0.75rem; }
-.mt-0\.5 { margin-top: 0.125rem; }
-
-/* Background colors */
+/* Background Colors */
 .bg-white { background-color: #ffffff; }
 .bg-gray-50 { background-color: #f9fafb; }
 .bg-gray-100 { background-color: #f3f4f6; }
 .bg-slate-200 { background-color: #e2e8f0; }
 .bg-yellow-50 { background-color: #fefce8; }
+.bg-yellow-100 { background-color: #fef3c7; }
 .bg-green-100 { background-color: #dcfce7; }
 .bg-red-100 { background-color: #fee2e2; }
+.bg-blue-100 { background-color: #dbeafe; }
+.bg-orange-100 { background-color: #fed7aa; }
 .bg-green-600 { background-color: #16a34a; }
 .bg-red-600 { background-color: #dc2626; }
+.bg-yellow-500 { background-color: #eab308; }
+.bg-green-500 { background-color: #22c55e; }
 .bg-black { background-color: #000000; }
 .bg-opacity-50 { background-color: rgba(0, 0, 0, 0.5); }
 
-/* Text colors */
+/* Text Colors */
 .text-slate-300 { color: #cbd5e1; }
 .text-slate-400 { color: #94a3b8; }
 .text-slate-500 { color: #64748b; }
@@ -1090,12 +1118,206 @@ export default {
 .text-slate-800 { color: #1e293b; }
 .text-white { color: #ffffff; }
 .text-gray-700 { color: #374151; }
-.text-gray-900 { color: #111827; }
 .text-yellow-600 { color: #ca8a04; }
 .text-yellow-700 { color: #a16207; }
 .text-yellow-800 { color: #854d0e; }
 .text-green-600 { color: #16a34a; }
 .text-green-700 { color: #15803d; }
+.text-green-800 { color: #166534; }
 .text-red-600 { color: #dc2626; }
 .text-red-700 { color: #b91c1c; }
+.text-red-800 { color: #991b1b; }
+.text-blue-800 { color: #1e40af; }
+.text-orange-800 { color: #9a3412; }
+
+/* Borders */
+.border { border-width: 1px; }
+.border-t { border-top-width: 1px; }
+.border-b { border-bottom-width: 1px; }
+.border-gray-100 { border-color: #f3f4f6; }
+.border-gray-200 { border-color: #e5e7eb; }
+.border-gray-300 { border-color: #d1d5db; }
+.border-yellow-200 { border-color: #fde047; }
+
+/* Border radius */
+.rounded { border-radius: 0.25rem; }
+.rounded-lg { border-radius: 0.5rem; }
+.rounded-xl { border-radius: 0.75rem; }
+.rounded-full { border-radius: 9999px; }
+
+/* Shadows */
+.shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+.shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+
+/* Width and height */
+.w-3 { width: 0.75rem; }
+.w-4 { width: 1rem; }
+.w-5 { width: 1.25rem; }
+.w-10 { width: 2.5rem; }
+.w-12 { width: 3rem; }
+.w-16 { width: 4rem; }
+.w-full { width: 100%; }
+.h-3 { height: 0.75rem; }
+.h-4 { height: 1rem; }
+.h-5 { height: 1.25rem; }
+.h-10 { height: 2.5rem; }
+.h-12 { height: 3rem; }
+.h-16 { height: 4rem; }
+
+/* Max width/height */
+.max-w-md { max-width: 28rem; }
+.max-h-\[90vh\] { max-height: 90vh; }
+
+/* Padding */
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+.p-8 { padding: 2rem; }
+.p-12 { padding: 3rem; }
+
+.px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+.pl-10 { padding-left: 2.5rem; }
+.pr-4 { padding-right: 1rem; }
+
+/* Margin */
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mt-4 { margin-top: 1rem; }
+.ml-1 { margin-left: 0.25rem; }
+.ml-2 { margin-left: 0.5rem; }
+.mr-1 { margin-left: 0.25rem; }
+.mr-2 { margin-right: 0.5rem; }
+
+/* Positioning */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.top-2\.5 { top: 0.625rem; }
+.left-3 { left: 0.75rem; }
+.mt-0\.5 { margin-top: 0.125rem; }
+
+/* Display */
+.block { display: block; }
+.inline-flex { display: inline-flex; }
+.hidden { display: none; }
+
+/* Responsive Display */
+@media (max-width: 640px) {
+  .sm\:hidden { display: none; }
+  .hidden.sm\:flex { display: none; }
+}
+
+@media (min-width: 640px) {
+  .sm\:flex { display: flex; }
+  .sm\:hidden { display: none; }
+  .sm\:inline { display: inline; }
+  .sm\:block { display: block; }
+  .sm\:flex-row { flex-direction: row; }
+  .sm\:items-center { align-items: center; }
+  .sm\:justify-between { justify-content: space-between; }
+  .sm\:justify-start { justify-content: flex-start; }
+  .sm\:space-y-0 > * + * { margin-top: 0; }
+  .sm\:space-x-3 > * + * { margin-left: 0.75rem; }
+  .sm\:text-left { text-align: left; }
+}
+
+@media (min-width: 1024px) {
+  .lg\:flex { display: flex; }
+  .lg\:hidden { display: none; }
+  .lg\:flex-row { flex-direction: row; }
+  .lg\:flex-col { flex-direction: column; }
+  .lg\:items-center { align-items: center; }
+  .lg\:space-y-0 > * + * { margin-top: 0; }
+  .lg\:space-x-2 > * + * { margin-left: 0.5rem; }
+}
+
+@media (min-width: 1280px) {
+  .xl\:flex-row { flex-direction: row; }
+  .xl\:space-y-0 > * + * { margin-top: 0; }
+  .xl\:space-x-2 > * + * { margin-left: 0.5rem; }
+}
+
+/* Text alignment */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+
+/* Cursor */
+.cursor-pointer { cursor: pointer; }
+
+/* Overflow */
+.overflow-hidden { overflow: hidden; }
+.overflow-y-auto { overflow-y: auto; }
+
+/* Divide utilities */
+.divide-y > * + * { border-top-width: 1px; }
+.divide-gray-200 > * + * { border-color: #e5e7eb; }
+
+/* Focus states */
+.focus\:ring-2:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #0066CC;
+}
+
+/* Scrollbar styling */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .transition-colors {
+    transition: none;
+  }
+  
+  .hover\:bg-gray-50:hover,
+  button:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .border-gray-100 {
+    border-color: #6b7280;
+  }
+  
+  .text-slate-600 {
+    color: #374151;
+  }
+  
+  .bg-gray-50 {
+    background-color: #f9fafb;
+  }
+}
+
+/* Print styles */
+@media print {
+  .fixed,
+  button {
+    display: none !important;
+  }
+  
+  .bg-white {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+}
 </style>
