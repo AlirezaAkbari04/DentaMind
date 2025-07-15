@@ -445,7 +445,6 @@ input[type="checkbox"]:checked {
 }
 
 input[type="checkbox"]:focus {
-  ring-color: #00A86B;
   border-color: #00A86B;
 }
 </style>

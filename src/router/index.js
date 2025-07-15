@@ -10,9 +10,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { authGuard, roleGuard, titleGuard } from './guards'
 
-// Lazy-loaded components for better performance
-const Login = () => import('@/views/auth/Login.vue')
-const NotFound = () => import('@/views/shared/NotFound.vue')
+const Login = () => import('@/views/Auth/Login.vue')
+
+// Shared Views - Error pages
+const NotFound = () => import('@/views/Shared/NotFound.vue')
+const Unauthorized = () => import('@/views/Shared/Unauthorized.vue')
 
 // Patient Components
 const PatientLayout = () => import('@/views/Patient/PatientLayout.vue')
