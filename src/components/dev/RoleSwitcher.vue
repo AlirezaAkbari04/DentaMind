@@ -37,7 +37,7 @@
       </div>
       
       <div class="text-xs text-yellow-600">
-        URL: ?role=doctor, ?role=secretary
+        URL: ?role=doctor, ?role=secretary, ?role=moderator
       </div>
       
       <!-- Console Commands -->
@@ -46,6 +46,7 @@
         <div class="text-xs text-yellow-600 mt-1 space-y-1">
           <div><code>authStore.switchTestRole('doctor')</code></div>
           <div><code>authStore.switchTestRole('secretary')</code></div>
+          <div><code>authStore.switchTestRole('moderator')</code></div>
           <div><code>authStore.clearTestMode()</code></div>
         </div>
       </details>
@@ -72,7 +73,8 @@ export default {
     // Mock users for display
     const mockUsers = {
       doctor: { name: 'Dr. Sarah Johnson', role: 'doctor' },
-      secretary: { name: 'Emma Rodriguez', role: 'secretary' }, 
+      secretary: { name: 'Emma Rodriguez', role: 'secretary' },
+      moderator: { name: 'Alex Chen', role: 'moderator' }
     }
     
     const switchRole = (role) => {
