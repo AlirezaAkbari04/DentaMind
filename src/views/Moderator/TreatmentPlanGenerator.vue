@@ -2,11 +2,11 @@
   Treatment Plan Generator Component
   
   AI-assisted treatment plan creation interface with:
-  - Patient selection and information input
+  - Patient selection and information input with health record access
   - Symptom and condition assessment
   - AI recommendation placeholder
-  - Treatment plan customization
-  - Doctor assignment and timeline
+  - Treatment plan customization with per-step doctor assignment
+  - Timeline management
 -->
 <template>
   <div class="p-4 space-y-6">
@@ -70,17 +70,27 @@
               <div
                 v-for="patient in searchResults"
                 :key="patient.id"
-                class="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-                @click="selectPatient(patient)"
+                class="p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
               >
                 <div class="flex items-center space-x-3">
                   <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                     <span class="text-sm font-medium text-slate-600">{{ patient.name.split(' ').map(n => n[0]).join('') }}</span>
                   </div>
-                  <div>
+                  <div class="flex-1 cursor-pointer" @click="selectPatient(patient)">
                     <p class="font-medium text-slate-800">{{ patient.name }}</p>
                     <p class="text-sm text-slate-600">ID: {{ patient.id }} • {{ patient.phone }}</p>
                   </div>
+                  <!-- Eye Icon for Health Record -->
+                  <button
+                    @click="viewPatientHealthRecord(patient)"
+                    class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+                    title="View Health Record"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -91,10 +101,21 @@
                 <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                   <span class="text-sm font-medium text-blue-600">{{ selectedPatient.name.split(' ').map(n => n[0]).join('') }}</span>
                 </div>
-                <div>
+                <div class="flex-1">
                   <p class="font-medium text-slate-800">{{ selectedPatient.name }}</p>
                   <p class="text-sm text-slate-600">{{ selectedPatient.age }} years old • Last visit: {{ formatDate(selectedPatient.lastVisit) }}</p>
                 </div>
+                <!-- Eye Icon for Selected Patient -->
+                <button
+                  @click="viewPatientHealthRecord(selectedPatient)"
+                  class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-colors"
+                  title="View Health Record"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
@@ -240,24 +261,6 @@
               >
             </div>
 
-            <!-- Assigned Doctor -->
-            <div>
-              <label class="block text-sm font-medium text-slate-700 mb-2">Assigned Doctor</label>
-              <select
-                v-model="treatmentPlan.assignedDoctor"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="">Select Doctor</option>
-                <option
-                  v-for="doctor in availableDoctors"
-                  :key="doctor.id"
-                  :value="doctor.id"
-                >
-                  {{ doctor.name }} - {{ doctor.specialty }}
-                </option>
-              </select>
-            </div>
-
             <!-- Timeline -->
             <div>
               <label class="block text-sm font-medium text-slate-700 mb-2">Estimated Timeline</label>
@@ -288,34 +291,54 @@
             <!-- Treatment Steps -->
             <div>
               <label class="block text-sm font-medium text-slate-700 mb-2">Treatment Steps</label>
-              <div class="space-y-2">
+              <div class="space-y-3">
                 <div
                   v-for="(step, index) in treatmentPlan.steps"
                   :key="index"
-                  class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg"
+                  class="p-3 border border-gray-200 rounded-lg space-y-3"
                 >
-                  <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                    <span class="text-sm font-medium text-primary-600">{{ index + 1 }}</span>
+                  <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span class="text-sm font-medium text-primary-600">{{ index + 1 }}</span>
+                    </div>
+                    <input
+                      v-model="step.description"
+                      type="text"
+                      placeholder="Treatment step description..."
+                      class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    >
+                    <button
+                      @click="removeTreatmentStep(index)"
+                      class="p-1 text-red-500 hover:text-red-700"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                   </div>
-                  <input
-                    v-model="step.description"
-                    type="text"
-                    placeholder="Treatment step description..."
-                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                  <button
-                    @click="removeTreatmentStep(index)"
-                    class="p-1 text-red-500 hover:text-red-700"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+                  
+                  <!-- Doctor Assignment for Each Step -->
+                  <div class="ml-11">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Assigned Doctor</label>
+                    <select
+                      v-model="step.assignedDoctor"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                    >
+                      <option value="">Select Doctor (Optional)</option>
+                      <option
+                        v-for="doctor in availableDoctors"
+                        :key="doctor.id"
+                        :value="doctor.id"
+                      >
+                        {{ doctor.name }} - {{ doctor.specialty }}
+                      </option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <button
                 @click="addTreatmentStep"
-                class="w-full mt-2 p-2 border-2 border-dashed border-gray-300 rounded-lg text-sm text-slate-600 hover:border-primary-300 hover:text-primary-600 transition-colors"
+                class="w-full mt-3 p-3 border-2 border-dashed border-gray-300 rounded-lg text-sm text-slate-600 hover:border-primary-300 hover:text-primary-600 transition-colors"
               >
                 + Add Treatment Step
               </button>
@@ -330,6 +353,110 @@
                 placeholder="Special instructions, precautions, or additional information..."
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patient Health Record Modal -->
+    <div v-if="showHealthRecordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+          <h3 class="text-xl font-semibold text-slate-800">Health Record - {{ selectedPatientForRecord?.name }}</h3>
+          <button 
+            @click="closeHealthRecordModal"
+            class="p-2 text-slate-400 hover:text-slate-600"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="p-6 space-y-6">
+          <!-- Patient Basic Info -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="text-sm font-medium text-slate-600">Age</label>
+                <p class="text-slate-800">{{ selectedPatientForRecord?.age }} years</p>
+              </div>
+              <div>
+                <label class="text-sm font-medium text-slate-600">Phone</label>
+                <p class="text-slate-800">{{ selectedPatientForRecord?.phone }}</p>
+              </div>
+              <div>
+                <label class="text-sm font-medium text-slate-600">Last Visit</label>
+                <p class="text-slate-800">{{ formatDate(selectedPatientForRecord?.lastVisit) }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Medical Conditions -->
+          <div>
+            <h4 class="text-lg font-semibold text-slate-800 mb-3">Medical Conditions</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div
+                v-for="condition in mockHealthRecord.conditions"
+                :key="condition.id"
+                class="p-3 border border-gray-200 rounded-lg"
+              >
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-medium text-slate-800">{{ condition.name }}</span>
+                  <span class="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">{{ condition.severity }}</span>
+                </div>
+                <p class="text-sm text-slate-600">{{ condition.description }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Allergies -->
+          <div>
+            <h4 class="text-lg font-semibold text-slate-800 mb-3">Allergies</h4>
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-for="allergy in mockHealthRecord.allergies"
+                :key="allergy"
+                class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm"
+              >
+                {{ allergy }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Recent Treatments -->
+          <div>
+            <h4 class="text-lg font-semibold text-slate-800 mb-3">Recent Treatments</h4>
+            <div class="space-y-2">
+              <div
+                v-for="treatment in mockHealthRecord.recentTreatments"
+                :key="treatment.id"
+                class="p-3 border border-gray-200 rounded-lg"
+              >
+                <div class="flex items-center justify-between">
+                  <span class="font-medium text-slate-800">{{ treatment.name }}</span>
+                  <span class="text-sm text-slate-600">{{ formatDate(treatment.date) }}</span>
+                </div>
+                <p class="text-sm text-slate-600">{{ treatment.description }}</p>
+                <p class="text-sm text-slate-500">Dr. {{ treatment.doctor }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Medications -->
+          <div>
+            <h4 class="text-lg font-semibold text-slate-800 mb-3">Current Medications</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div
+                v-for="medication in mockHealthRecord.medications"
+                :key="medication.id"
+                class="p-3 border border-gray-200 rounded-lg"
+              >
+                <span class="font-medium text-slate-800">{{ medication.name }}</span>
+                <p class="text-sm text-slate-600">{{ medication.dosage }}</p>
+                <p class="text-sm text-slate-500">{{ medication.frequency }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -357,6 +484,8 @@ export default {
     const searchResults = ref([])
     const selectedPatient = ref(null)
     const aiRecommendations = ref(null)
+    const showHealthRecordModal = ref(false)
+    const selectedPatientForRecord = ref(null)
     
     // Assessment data
     const assessment = ref({
@@ -366,14 +495,13 @@ export default {
       urgency: 'medium'
     })
     
-    // Treatment plan data
+    // Treatment plan data (removed assignedDoctor, added assignedDoctor to each step)
     const treatmentPlan = ref({
       title: '',
-      assignedDoctor: '',
       startDate: '',
       duration: '1 month',
       steps: [
-        { description: '' }
+        { description: '', assignedDoctor: '' }
       ],
       notes: ''
     })
@@ -397,6 +525,23 @@ export default {
       { id: 'P003', name: 'Carol Davis', age: 45, phone: '(555) 345-6789', lastVisit: '2024-01-12' },
       { id: 'P004', name: 'David Wilson', age: 52, phone: '(555) 456-7890', lastVisit: '2024-01-05' }
     ]
+
+    // Mock health record data
+    const mockHealthRecord = ref({
+      conditions: [
+        { id: 1, name: 'Gingivitis', severity: 'Mild', description: 'Inflammation of the gums' },
+        { id: 2, name: 'Bruxism', severity: 'Moderate', description: 'Teeth grinding during sleep' }
+      ],
+      allergies: ['Penicillin', 'Latex'],
+      recentTreatments: [
+        { id: 1, name: 'Dental Cleaning', date: '2024-01-10', description: 'Routine cleaning and fluoride treatment', doctor: 'Sarah Johnson' },
+        { id: 2, name: 'Cavity Filling', date: '2023-12-15', description: 'Composite filling on upper right molar', doctor: 'Michael Chen' }
+      ],
+      medications: [
+        { id: 1, name: 'Ibuprofen', dosage: '400mg', frequency: 'As needed for pain' },
+        { id: 2, name: 'Fluoride Rinse', dosage: '10ml', frequency: 'Daily before bed' }
+      ]
+    })
     
     // ==========================================
     // COMPUTED PROPERTIES
@@ -438,9 +583,19 @@ export default {
       searchQuery.value = ''
       searchResults.value = []
     }
+
+    const viewPatientHealthRecord = (patient) => {
+      selectedPatientForRecord.value = patient
+      showHealthRecordModal.value = true
+    }
+
+    const closeHealthRecordModal = () => {
+      showHealthRecordModal.value = false
+      selectedPatientForRecord.value = null
+    }
     
     const addTreatmentStep = () => {
-      treatmentPlan.value.steps.push({ description: '' })
+      treatmentPlan.value.steps.push({ description: '', assignedDoctor: '' })
     }
     
     const removeTreatmentStep = (index) => {
@@ -486,12 +641,12 @@ export default {
         // Auto-populate treatment plan
         treatmentPlan.value.title = 'Emergency Root Canal Treatment Plan'
         treatmentPlan.value.steps = [
-          { description: 'Initial examination and X-rays' },
-          { description: 'Administer local anesthesia' },
-          { description: 'Root canal treatment' },
-          { description: 'Temporary filling placement' },
-          { description: 'Crown preparation and placement' },
-          { description: 'Follow-up appointment' }
+          { description: 'Initial examination and X-rays', assignedDoctor: '' },
+          { description: 'Administer local anesthesia', assignedDoctor: '' },
+          { description: 'Root canal treatment', assignedDoctor: '' },
+          { description: 'Temporary filling placement', assignedDoctor: '' },
+          { description: 'Crown preparation and placement', assignedDoctor: '' },
+          { description: 'Follow-up appointment', assignedDoctor: '' }
         ]
         
         emit('show-success', 'AI treatment plan generated successfully')
@@ -532,6 +687,9 @@ export default {
       aiRecommendations,
       availableSymptoms,
       availableDoctors,
+      showHealthRecordModal,
+      selectedPatientForRecord,
+      mockHealthRecord,
       
       // Computed
       canGenerate,
@@ -540,6 +698,8 @@ export default {
       formatDate,
       searchPatients,
       selectPatient,
+      viewPatientHealthRecord,
+      closeHealthRecordModal,
       addTreatmentStep,
       removeTreatmentStep,
       generatePlan,
@@ -609,6 +769,18 @@ input[type="checkbox"] {
 
 .hover\\:border-primary-300:hover {
   border-color: #93c5fd;
+}
+
+.hover\\:bg-blue-50:hover {
+  background-color: #eff6ff;
+}
+
+.hover\\:text-blue-800:hover {
+  color: #1e40af;
+}
+
+.hover\\:bg-blue-100:hover {
+  background-color: #dbeafe;
 }
 
 /* Transition effects */
