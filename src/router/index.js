@@ -25,7 +25,7 @@ const MedicalRecords = () => import('@/views/Patient/MedicalRecords.vue')
 const FamilyManagement = () => import('@/views/Patient/FamilyManagement.vue')
 const AllAppointments = () => import('@/views/Patient/AllAppointments.vue')
 const ProfileSettings = () => import('@/views/Patient/ProfileSettings.vue')
-const ChatInterface = () => import('@/components/Patient/ChatInterface.vue')
+const ChatInterface = () => import('@/views/Patient/ChatInterface.vue')
 
 // Doctor Secretary Components
 const DoctorSecretaryLayout = () => import('@/views/DoctorSecretary/DoctorSecretaryLayout.vue')
@@ -57,6 +57,7 @@ const SystemAnalytics = () => import('@/views/Moderator/SystemAnalytics.vue')
 const DatabaseTools = () => import('@/views/Moderator/DatabaseTools.vue')
 const SecuritySettings = () => import('@/views/Moderator/SecuritySettings.vue')
 const ModeratorProfile = () => import('@/views/Moderator/ModeratorProfile.vue')
+const TreatmentPlanRequests = () => import('@/views/Moderator/TreatmentPlanRequests.vue')
 
 const routes = [
   {
@@ -329,6 +330,13 @@ const routes = [
         meta: { title: 'View Treatment Plan' }
       },
       
+      {
+        path: 'treatment-plan-requests',
+        name: 'TreatmentPlanRequests',
+        component: TreatmentPlanRequests ,
+        meta: { title: 'Treatment Plan Requests' }
+      },
+
       {
         path: 'task-templates',
         name: 'TaskTemplateManagement',

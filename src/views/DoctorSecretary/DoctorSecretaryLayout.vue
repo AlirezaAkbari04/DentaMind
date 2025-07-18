@@ -225,7 +225,7 @@
               </router-link>
               
               <router-link 
-                :to="'/doctor-secretary/clinic-flow'"
+                :to="'/doctor-secretary/clinic-flow-management'"
                 class="menu-item"
                 @click="closeMenu"
               >

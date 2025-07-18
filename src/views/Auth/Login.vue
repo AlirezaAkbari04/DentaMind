@@ -37,7 +37,7 @@
         </div>
         
         <!-- Application Title -->
-        <h1 class="text-2xl font-bold text-slate-900 mb-2">Dental Clinic Management</h1>
+        <h1 class="text-2xl font-bold text-slate-900 mb-2"> DentaMind</h1>
         
         <!-- Dynamic subtitle based on current mode -->
         <p class="text-slate-600">{{ isSignUp ? 'Create your account' : 'Welcome back' }}</p>
@@ -266,7 +266,7 @@
         Copyright information
       -->
       <div class="text-center mt-8 text-sm text-slate-600">
-        <p>© 2024 Dental Clinic Management System. All rights reserved.</p>
+        <p>© 2024 DentaMind. All rights reserved.</p>
       </div>
     </div>
 

@@ -177,6 +177,19 @@
       <h2 class="text-lg font-semibold text-slate-800 mb-4">Quick Actions</h2>
       
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <button 
+          @click="openTreatmentPlanRequests"
+          class="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+        >
+          <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-2">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 8h6m-6 4h6" />
+            </svg>
+          </div>
+          <span class="text-sm font-medium text-slate-700">Plan Requests</span>
+        </button>
+
         <!-- Treatment Plan Generator -->
         <button 
           @click="openTreatmentPlanGenerator"
@@ -501,6 +514,10 @@ export default {
     const openTaskTemplateCreator = () => {
       router.push('/moderator/task-templates/new')
     }
+
+    const openTreatmentPlanRequests = () => {
+      router.push('/moderator/treatment-plan-requests')
+    }
     
     const openTreatmentPlans = () => {
       router.push('/moderator/treatment-plans')
@@ -570,6 +587,7 @@ export default {
       openTaskTemplateCreator,
       openTreatmentPlans,
       openTaskTemplates,
+      openTreatmentPlanRequests,
       openSystemAnalytics,
       openAIConfiguration,
       loadDashboardData
